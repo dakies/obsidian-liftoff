@@ -1,0 +1,998 @@
+/* ===== LiftOff Plugin Styles ===== */
+
+/* --- Shared --- */
+.ln-home-view,
+.ln-workout-view {
+	padding: 12px 16px;
+	padding-bottom: 120px;
+	max-width: 500px;
+	margin: 0 auto;
+}
+
+.ln-section {
+	margin-bottom: 24px;
+}
+
+.ln-section-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 12px;
+}
+
+.ln-section-title {
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	opacity: 0.5;
+}
+
+.ln-empty-state {
+	padding: 16px;
+	text-align: center;
+	opacity: 0.4;
+	font-size: 13px;
+}
+
+/* --- Home View --- */
+.ln-start-workout-btn {
+	width: 100%;
+	padding: 16px;
+	font-size: 16px;
+	font-weight: 600;
+	border-radius: 12px;
+	border: none;
+	cursor: pointer;
+	margin-bottom: 24px;
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+.ln-new-template-btn {
+	font-size: 12px;
+	padding: 4px 12px;
+	border-radius: 6px;
+	border: none;
+	cursor: pointer;
+	background: var(--background-modifier-hover);
+	color: var(--text-muted);
+}
+
+.ln-template-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 14px 16px;
+	margin-bottom: 8px;
+	border-radius: 10px;
+	background: var(--background-secondary);
+	cursor: pointer;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.ln-template-item:active {
+	opacity: 0.8;
+}
+
+.ln-template-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.ln-template-name {
+	font-size: 14px;
+	font-weight: 500;
+	color: var(--text-normal);
+}
+
+.ln-template-preview {
+	font-size: 11px;
+	color: var(--text-muted);
+	margin-top: 2px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ln-template-actions {
+	display: flex;
+	gap: 4px;
+	margin-left: 8px;
+	flex-shrink: 0;
+}
+
+.ln-template-edit-btn,
+.ln-template-delete-btn {
+	min-height: 36px;
+	min-width: 36px;
+	padding: 6px;
+	border-radius: 8px;
+	border: none;
+	cursor: pointer;
+	font-size: 14px;
+	background: var(--background-modifier-hover);
+	color: var(--text-muted);
+	text-align: center;
+}
+
+.ln-template-delete-btn {
+	font-size: 18px;
+	color: var(--text-faint);
+}
+
+.ln-recent-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px 16px;
+	margin-bottom: 6px;
+	border-radius: 10px;
+	background: var(--background-secondary);
+}
+
+.ln-recent-info {
+	flex: 1;
+}
+
+.ln-recent-name-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.ln-recent-name {
+	font-size: 13px;
+	color: var(--text-normal);
+}
+
+.ln-recent-duration {
+	font-size: 12px;
+	color: var(--text-faint);
+}
+
+.ln-recent-date {
+	font-size: 12px;
+	color: var(--text-faint);
+}
+
+/* --- Workout View --- */
+.ln-workout-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16px;
+}
+
+.ln-workout-title {
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--text-normal);
+}
+
+.ln-workout-header-right {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.ln-workout-elapsed {
+	font-size: 14px;
+	color: var(--interactive-accent);
+	font-variant-numeric: tabular-nums;
+}
+
+.ln-timer-icon-btn {
+	font-size: 18px;
+	padding: 6px 10px;
+	border-radius: 6px;
+	border: none;
+	cursor: pointer;
+	background: var(--background-secondary);
+}
+
+/* --- Rest Timer --- */
+.ln-rest-timer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 10px 16px;
+	margin-bottom: 12px;
+	border-radius: 10px;
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	font-variant-numeric: tabular-nums;
+}
+
+.ln-rest-timer-hidden {
+	display: none;
+}
+
+.ln-rest-timer-label {
+	font-size: 13px;
+	font-weight: 500;
+	opacity: 0.85;
+}
+
+.ln-rest-timer-value {
+	font-size: 18px;
+	font-weight: 700;
+	letter-spacing: 1px;
+}
+
+.ln-rest-timer-dismiss {
+	margin-left: 4px;
+	padding: 2px 8px;
+	border: none;
+	border-radius: 6px;
+	background: rgba(255, 255, 255, 0.2);
+	color: var(--text-on-accent);
+	font-size: 16px;
+	cursor: pointer;
+	line-height: 1;
+}
+
+.ln-rest-timer-dismiss:active {
+	opacity: 0.7;
+}
+
+/* --- Exercise Card --- */
+.ln-exercise-card {
+	background: var(--background-secondary);
+	border-radius: 12px;
+	padding: 16px;
+	margin-bottom: 12px;
+}
+
+.ln-exercise-card.ln-exercise-collapsed {
+	padding: 16px;
+}
+
+.ln-exercise-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	cursor: pointer;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.ln-exercise-name {
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--text-normal);
+}
+
+.ln-exercise-header-right {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.ln-exercise-last-date,
+.ln-exercise-set-count {
+	font-size: 11px;
+	color: var(--text-faint);
+}
+
+.ln-exercise-notes {
+	font-size: 11px;
+	color: var(--text-muted);
+	font-style: italic;
+	margin-top: 4px;
+}
+
+.ln-exercise-previous {
+	font-size: 11px;
+	color: var(--text-faint);
+	margin-bottom: 8px;
+	margin-top: 4px;
+}
+
+/* --- Set Row --- */
+.ln-set-row {
+	display: grid;
+	grid-template-columns: 28px 90px 90px 44px;
+	gap: 8px;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 8px;
+}
+
+.ln-set-row.ln-set-header {
+	margin-bottom: 6px;
+}
+
+.ln-set-row.ln-set-header span {
+	font-size: 10px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: var(--text-faint);
+}
+
+.ln-set-number {
+	font-size: 13px;
+	text-align: center;
+	color: var(--text-faint);
+}
+
+.ln-set-input {
+	padding: 10px 8px;
+	border-radius: 8px !important;
+	border: none;
+	text-align: center;
+	font-size: 15px;
+	background: var(--background-primary);
+	color: var(--text-normal);
+	min-height: 44px;
+	box-sizing: border-box;
+	width: 100%;
+	-webkit-appearance: none !important;
+	appearance: none !important;
+}
+
+.ln-set-input:focus {
+	outline: 2px solid var(--interactive-accent);
+}
+
+.ln-set-input::-webkit-outer-spin-button,
+.ln-set-input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+.ln-set-input[type="number"] {
+	-moz-appearance: textfield;
+}
+
+.ln-set-check {
+	min-height: 44px;
+	min-width: 44px;
+	padding: 12px;
+	border-radius: 8px;
+	border: 1.5px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+	font-size: 16px;
+	text-align: center;
+	cursor: pointer;
+	color: var(--text-faint);
+}
+
+.ln-set-check.ln-set-check-done {
+	background: var(--color-green);
+	border-color: var(--color-green);
+	color: white;
+}
+
+.ln-set-row.ln-set-completed .ln-set-input {
+	opacity: 0.6;
+}
+
+.ln-add-set-btn {
+	text-align: center;
+	padding: 10px;
+	margin-top: 4px;
+	border: 1px dashed var(--background-modifier-border);
+	border-radius: 8px;
+	color: var(--interactive-accent);
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.ln-add-set-btn:active {
+	opacity: 0.7;
+}
+
+/* --- Timer Block --- */
+.ln-timer-block {
+	text-align: center;
+	padding: 8px 0;
+}
+
+.ln-timer-block-labels {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	gap: 8px;
+	margin-bottom: 4px;
+}
+
+.ln-timer-block-labels span {
+	font-size: 10px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: var(--text-faint);
+	text-align: center;
+}
+
+.ln-timer-block-inputs {
+	display: grid;
+	grid-template-columns: 1fr auto 1fr auto 1fr;
+	gap: 4px;
+	align-items: center;
+	margin-bottom: 12px;
+}
+
+.ln-timer-block-input {
+	padding: 10px 8px;
+	border-radius: 8px !important;
+	border: none;
+	text-align: center;
+	font-size: 16px;
+	font-weight: 600;
+	background: var(--background-primary);
+	color: var(--text-normal);
+	min-height: 44px;
+	box-sizing: border-box;
+	width: 100%;
+	-webkit-appearance: none !important;
+	appearance: none !important;
+}
+
+.ln-timer-block-input:focus {
+	outline: 2px solid var(--interactive-accent);
+}
+
+.ln-timer-block-input::-webkit-outer-spin-button,
+.ln-timer-block-input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+.ln-timer-block-input[type="number"] {
+	-moz-appearance: textfield;
+}
+
+.ln-timer-block-unit {
+	font-size: 12px;
+	color: var(--text-faint);
+}
+
+.ln-timer-block-start-btn {
+	width: 100%;
+	padding: 14px;
+	font-size: 15px;
+	font-weight: 600;
+	border-radius: 10px;
+	border: none;
+	cursor: pointer;
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+.ln-timer-block-start-btn:active {
+	opacity: 0.8;
+}
+
+.ln-timer-block-display {
+	padding: 16px 0;
+}
+
+.ln-timer-block-interval-label {
+	font-size: 13px;
+	color: var(--text-muted);
+	margin-bottom: 4px;
+}
+
+.ln-timer-block-phase-label {
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	margin-bottom: 8px;
+}
+
+.ln-timer-block-phase-work {
+	color: var(--interactive-accent);
+}
+
+.ln-timer-block-phase-rest {
+	color: var(--color-yellow);
+}
+
+.ln-timer-block-countdown {
+	font-size: 48px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 2px;
+	color: var(--text-normal);
+}
+
+.ln-timer-block-control-btn {
+	width: 100%;
+	padding: 14px;
+	font-size: 15px;
+	font-weight: 600;
+	border-radius: 10px;
+	border: none;
+	cursor: pointer;
+	background: var(--background-primary);
+	color: var(--text-normal);
+}
+
+.ln-timer-block-control-btn:active {
+	opacity: 0.8;
+}
+
+.ln-timer-working {
+	background: rgba(var(--interactive-accent-rgb, 66, 135, 245), 0.06);
+	border-radius: 12px;
+}
+
+.ln-timer-resting {
+	background: rgba(var(--color-yellow-rgb, 224, 172, 0), 0.06);
+	border-radius: 12px;
+}
+
+.ln-timer-block-done-label {
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--color-green);
+	padding: 16px 0;
+}
+
+.ln-timer-block-reset-btn {
+	width: 100%;
+	padding: 12px;
+	font-size: 14px;
+	border-radius: 10px;
+	border: none;
+	cursor: pointer;
+	background: var(--background-primary);
+	color: var(--text-muted);
+}
+
+.ln-timer-block-reset-btn:active {
+	opacity: 0.8;
+}
+
+.ln-exercise-create-timer {
+	color: var(--text-muted);
+}
+
+/* --- Exercise Library Modal --- */
+.ln-exercise-library {
+	padding: 8px;
+}
+
+.ln-el-list {
+	max-height: 60vh;
+	overflow-y: auto;
+}
+
+.ln-el-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px;
+	margin-bottom: 6px;
+	border-radius: 8px;
+	background: var(--background-secondary);
+}
+
+.ln-el-row-editing {
+	flex-direction: column;
+	align-items: stretch;
+	gap: 8px;
+	padding: 14px;
+}
+
+.ln-el-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.ln-el-name-row {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.ln-el-name {
+	font-size: 14px;
+	font-weight: 500;
+	color: var(--text-normal);
+}
+
+.ln-el-type-badge {
+	font-size: 13px;
+}
+
+.ln-el-notes-preview {
+	font-size: 11px;
+	color: var(--text-faint);
+	margin-top: 2px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ln-el-actions {
+	display: flex;
+	gap: 4px;
+	margin-left: 8px;
+	flex-shrink: 0;
+}
+
+.ln-el-action-btn {
+	min-height: 36px;
+	min-width: 36px;
+	padding: 6px;
+	border-radius: 8px;
+	border: none;
+	cursor: pointer;
+	font-size: 14px;
+	background: var(--background-modifier-hover);
+	color: var(--text-muted);
+	text-align: center;
+}
+
+.ln-el-delete-btn {
+	font-size: 18px;
+	color: var(--text-faint);
+}
+
+.ln-el-edit-label {
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: var(--text-faint);
+	margin-bottom: 2px;
+}
+
+.ln-el-edit-input {
+	width: 100%;
+	padding: 10px;
+	font-size: 14px;
+	border-radius: 8px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-primary);
+	color: var(--text-normal);
+	box-sizing: border-box;
+}
+
+.ln-el-type-row {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.ln-el-type-toggle {
+	display: flex;
+	gap: 6px;
+}
+
+.ln-el-type-btn {
+	flex: 1;
+	padding: 8px;
+	font-size: 13px;
+	border-radius: 8px;
+	border: 1.5px solid var(--background-modifier-border);
+	background: var(--background-primary);
+	color: var(--text-muted);
+	cursor: pointer;
+}
+
+.ln-el-type-btn.ln-el-type-btn-active {
+	border-color: var(--interactive-accent);
+	color: var(--interactive-accent);
+	font-weight: 600;
+}
+
+.ln-el-edit-textarea {
+	width: 100%;
+	padding: 10px;
+	font-size: 13px;
+	border-radius: 8px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-primary);
+	color: var(--text-normal);
+	box-sizing: border-box;
+	resize: vertical;
+	font-family: inherit;
+}
+
+.ln-el-edit-buttons {
+	display: flex;
+	gap: 8px;
+	justify-content: flex-end;
+}
+
+.ln-el-edit-cancel {
+	padding: 8px 16px;
+	font-size: 13px;
+	border-radius: 8px;
+	border: none;
+	cursor: pointer;
+	background: var(--background-modifier-hover);
+	color: var(--text-muted);
+}
+
+.ln-el-edit-save {
+	padding: 8px 16px;
+	font-size: 13px;
+	font-weight: 600;
+	border-radius: 8px;
+	border: none;
+	cursor: pointer;
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+/* --- Workout Actions --- */
+.ln-workout-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-top: 16px;
+}
+
+.ln-add-exercise-btn {
+	width: 100%;
+	padding: 14px;
+	font-size: 14px;
+	font-weight: 500;
+	border-radius: 10px;
+	border: none;
+	cursor: pointer;
+	background: var(--background-secondary);
+	color: var(--interactive-accent);
+}
+
+.ln-finish-btn {
+	width: 100%;
+	padding: 14px;
+	font-size: 14px;
+	font-weight: 600;
+	border-radius: 10px;
+	border: none;
+	cursor: pointer;
+	background: var(--color-green);
+	color: white;
+}
+
+.ln-finish-btn:active,
+.ln-add-exercise-btn:active {
+	opacity: 0.8;
+}
+
+/* --- Exercise Picker --- */
+.ln-exercise-picker {
+	padding: 8px;
+}
+
+.ln-exercise-search {
+	width: 100%;
+	padding: 12px;
+	font-size: 15px;
+	border-radius: 8px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-primary);
+	color: var(--text-normal);
+	margin-bottom: 12px;
+	box-sizing: border-box;
+}
+
+.ln-exercise-section-label {
+	font-size: 10px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: var(--text-faint);
+	padding: 8px 0 4px;
+}
+
+.ln-exercise-result {
+	padding: 12px;
+	border-radius: 8px;
+	cursor: pointer;
+	font-size: 14px;
+	color: var(--text-normal);
+}
+
+.ln-exercise-result:hover,
+.ln-exercise-result:active {
+	background: var(--background-modifier-hover);
+}
+
+.ln-exercise-create {
+	color: var(--interactive-accent);
+	font-weight: 500;
+}
+
+/* --- Timer --- */
+.ln-timer-modal .modal-content {
+	padding: 16px;
+}
+
+.ln-timer {
+	text-align: center;
+}
+
+.ln-timer-display {
+	font-size: 56px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 2px;
+	padding: 24px 0;
+	color: var(--text-normal);
+}
+
+.ln-timer-presets {
+	display: flex;
+	gap: 10px;
+	justify-content: center;
+	margin-bottom: 24px;
+}
+
+.ln-timer-preset {
+	padding: 12px 18px;
+	border-radius: 10px;
+	border: none;
+	cursor: pointer;
+	font-size: 14px;
+	min-width: 52px;
+	background: var(--background-secondary);
+	color: var(--text-normal);
+}
+
+.ln-timer-preset.ln-timer-preset-active {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	font-weight: 600;
+}
+
+.ln-timer-controls {
+	display: flex;
+	gap: 12px;
+}
+
+.ln-timer-btn {
+	flex: 1;
+	padding: 16px;
+	border-radius: 12px;
+	border: none;
+	cursor: pointer;
+	font-size: 15px;
+}
+
+.ln-timer-reset {
+	background: var(--background-secondary);
+	color: var(--text-normal);
+}
+
+.ln-timer-start {
+	flex: 2;
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	font-weight: 600;
+}
+
+.ln-timer-btn:active {
+	opacity: 0.8;
+}
+
+/* --- Modals --- */
+.ln-modal-message {
+	font-size: 15px;
+	margin-bottom: 16px;
+}
+
+.ln-modal-input {
+	width: 100%;
+	padding: 12px;
+	font-size: 15px;
+	border-radius: 8px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-primary);
+	color: var(--text-normal);
+	margin-bottom: 16px;
+	box-sizing: border-box;
+}
+
+.ln-modal-buttons {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.ln-modal-buttons button {
+	padding: 10px 20px;
+	border-radius: 8px;
+	border: none;
+	cursor: pointer;
+	font-size: 14px;
+	min-height: 44px;
+}
+
+/* --- Template Editor --- */
+.ln-template-editor {
+	padding: 8px;
+}
+
+.ln-te-exercises {
+	margin-bottom: 16px;
+}
+
+.ln-te-exercise-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px;
+	margin-bottom: 6px;
+	border-radius: 8px;
+	background: var(--background-secondary);
+}
+
+.ln-te-exercise-name {
+	font-size: 14px;
+	font-weight: 500;
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ln-te-exercise-controls {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-shrink: 0;
+}
+
+.ln-te-sets-btn {
+	min-height: 36px;
+	min-width: 36px;
+	padding: 6px;
+	border-radius: 8px;
+	border: none;
+	cursor: pointer;
+	font-size: 16px;
+	font-weight: 600;
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+	text-align: center;
+}
+
+.ln-te-sets-label {
+	font-size: 13px;
+	color: var(--text-muted);
+	min-width: 42px;
+	text-align: center;
+}
+
+.ln-te-remove-btn {
+	min-height: 36px;
+	min-width: 36px;
+	padding: 6px;
+	border-radius: 8px;
+	border: none;
+	cursor: pointer;
+	font-size: 18px;
+	background: none;
+	color: var(--text-faint);
+	margin-left: 4px;
+}
+
+.ln-te-add-btn {
+	width: 100%;
+	padding: 14px;
+	font-size: 14px;
+	font-weight: 500;
+	border-radius: 10px;
+	border: none;
+	cursor: pointer;
+	background: var(--background-secondary);
+	color: var(--interactive-accent);
+	margin-bottom: 8px;
+}
+
+.ln-te-save-btn {
+	width: 100%;
+	padding: 14px;
+	font-size: 14px;
+	font-weight: 600;
+	border-radius: 10px;
+	border: none;
+	cursor: pointer;
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+}

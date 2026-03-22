@@ -1,0 +1,25 @@
+{
+	"name": "obsidian-liftoff",
+	"version": "0.1.0",
+	"description": "Mobile-first gym workout tracker for Obsidian",
+	"main": "main.js",
+	"type": "module",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"keywords": ["obsidian", "workout", "gym", "fitness"],
+	"license": "MIT",
+	"devDependencies": {
+		"@types/node": "^18.0.0",
+		"esbuild": "0.25.5",
+		"tslib": "2.4.0",
+		"typescript": "^5.8.3",
+		"vitest": "^3.0.0"
+	},
+	"dependencies": {
+		"obsidian": "latest"
+	}
+}
