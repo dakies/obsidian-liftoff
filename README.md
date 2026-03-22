@@ -2,7 +2,6 @@
 
 Mobile-first gym workout tracker for [Obsidian](https://obsidian.md). Log sets, reps, and weights with speed-optimized UX. All data stored as markdown in your vault.
 
-![Screenshot](screenshot.png)
 
 ## Features
 
