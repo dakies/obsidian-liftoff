@@ -91,9 +91,9 @@ export default class LiftOffPlugin extends Plugin {
 		const view = leaf.view;
 		if (view instanceof WorkoutView) {
 			if (template) {
-				await view.startFromTemplate(template);
+				view.startFromTemplate(template);
 			} else {
-				await view.startEmpty();
+				view.startEmpty();
 			}
 		}
 	}

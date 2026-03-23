@@ -61,7 +61,7 @@ export class WorkoutView extends ItemView {
 		return entry?.exerciseType ?? "weight";
 	}
 
-	async startFromTemplate(template: WorkoutTemplate): Promise<void> {
+	startFromTemplate(template: WorkoutTemplate): void {
 		this.initialized = true;
 		this.workout = this.createEmptyWorkout();
 		this.workout.template = template.name;
@@ -94,7 +94,7 @@ export class WorkoutView extends ItemView {
 		this.renderWorkout();
 	}
 
-	async startEmpty(): Promise<void> {
+	startEmpty(): void {
 		this.initialized = true;
 		this.workout = this.createEmptyWorkout();
 		this.startTime = new Date();
