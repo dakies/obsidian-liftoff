@@ -120,7 +120,7 @@ export class ExerciseLibraryModal extends Modal {
 		});
 		const timerBtn = typeToggle.createEl("button", {
 			cls: `ln-el-type-btn ${entry.exerciseType === "timer" ? "ln-el-type-btn-active" : ""}`,
-			text: "\u23F1 Timer",
+			text: "Timer",
 		});
 
 		let currentType: ExerciseType = entry.exerciseType ?? "weight";

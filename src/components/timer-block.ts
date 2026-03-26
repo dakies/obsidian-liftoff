@@ -99,7 +99,7 @@ export class TimerBlock {
 		// Start button
 		const startBtn = this.containerEl.createEl("button", {
 			cls: "ln-timer-block-start-btn",
-			text: "\u25B6  Start",
+			text: "Start",
 		});
 		startBtn.addEventListener("click", () => this.start());
 	}
