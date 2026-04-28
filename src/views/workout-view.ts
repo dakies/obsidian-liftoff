@@ -4,9 +4,9 @@ import type { Workout, Exercise, ExerciseType } from "../types";
 import type { WorkoutTemplate } from "../types";
 import { ExerciseCard } from "../components/exercise-card";
 import { ExercisePickerModal } from "../components/exercise-picker";
-import { ConfirmModal } from "../components/modals";
+import { ConfirmModal, ExerciseDetailsModal } from "../components/modals";
 import { TimerModal } from "./timer-view";
-import { findLastSetsForExercise } from "../utils/history";
+import { findLastSetsForExercise, findPastSessionsForExercise } from "../utils/history";
 
 export const WORKOUT_VIEW_TYPE = "liftoff-workout";
 
@@ -21,6 +21,7 @@ export class WorkoutView extends ItemView {
 	private restTimerEl: HTMLElement | null = null;
 	private recentWorkouts: Workout[] = [];
 	private initialized = false;
+	private persistTimeoutId: number | null = null;
 
 	constructor(leaf: WorkspaceLeaf, plugin: LiftOffPlugin) {
 		super(leaf);
@@ -92,6 +93,7 @@ export class WorkoutView extends ItemView {
 		this.loadRecentWorkouts();
 		this.autoFillFromHistory();
 		this.renderWorkout();
+		this.schedulePersist();
 	}
 
 	startEmpty(): void {
@@ -100,6 +102,20 @@ export class WorkoutView extends ItemView {
 		this.startTime = new Date();
 		this.loadRecentWorkouts();
 		this.renderWorkout();
+		this.schedulePersist();
+	}
+
+	restoreFromActiveSession(): void {
+		const saved = this.plugin.activeSession;
+		if (!saved) return;
+		this.initialized = true;
+		this.workout = saved.workout;
+		this.startTime = new Date(saved.startTimeMs);
+		this.loadRecentWorkouts();
+		this.renderWorkout();
+		if (saved.restStartTimeMs) {
+			this.startRestTimer(saved.restStartTimeMs);
+		}
 	}
 
 	private loadRecentWorkouts(): void {
@@ -135,10 +151,12 @@ export class WorkoutView extends ItemView {
 	}
 
 	onOpen(): Promise<void> {
-		// If not freshly started via startEmpty/startFromTemplate,
-		// this is a workspace restoration — redirect to home.
+		// If startEmpty/startFromTemplate/restoreFromActiveSession was already called, nothing to do.
 		window.setTimeout(() => {
-			if (!this.initialized) {
+			if (this.initialized) return;
+			if (this.plugin.activeSession) {
+				this.restoreFromActiveSession();
+			} else {
 				void this.plugin.showHomeView();
 			}
 		}, 100);
@@ -192,9 +210,15 @@ export class WorkoutView extends ItemView {
 				lastData,
 				this.plugin.settings,
 				{
-					onExerciseChanged: () => {},
+					onExerciseChanged: () => {
+						this.schedulePersist();
+					},
 					onSetCompleted: () => {
 						this.startRestTimer();
+						this.schedulePersist();
+					},
+					onShowDetails: () => {
+						this.openExerciseDetails(exercise.name);
 					},
 				}
 			);
@@ -219,6 +243,9 @@ export class WorkoutView extends ItemView {
 		finishBtn.addEventListener("click", () => {
 			void this.finishWorkout();
 		});
+
+		// Spacer so the last action button isn't clipped behind the mobile nav bar.
+		container.createDiv({ cls: "ln-workout-bottom-spacer" });
 	}
 
 	private startElapsedTimer(el: HTMLElement): void {
@@ -240,27 +267,32 @@ export class WorkoutView extends ItemView {
 		});
 	}
 
-	private startRestTimer(): void {
+	private startRestTimer(startMs?: number): void {
 		if (this.restTimerIntervalId !== null) {
 			window.clearInterval(this.restTimerIntervalId);
 		}
 
-		this.restStartTime = Date.now();
+		this.restStartTime = startMs ?? Date.now();
 
 		if (this.restTimerEl) {
 			this.restTimerEl.removeClass("ln-rest-timer-hidden");
-			const valueEl = this.restTimerEl.querySelector(".ln-rest-timer-value") as HTMLElement;
-			if (valueEl) valueEl.textContent = "0:00";
 		}
+		this.updateRestTimerDisplay();
 
 		this.restTimerIntervalId = window.setInterval(() => {
-			if (!this.restStartTime || !this.restTimerEl) return;
-			const elapsed = Math.floor((Date.now() - this.restStartTime) / 1000);
-			const m = Math.floor(elapsed / 60);
-			const s = elapsed % 60;
-			const valueEl = this.restTimerEl.querySelector(".ln-rest-timer-value") as HTMLElement;
-			if (valueEl) valueEl.textContent = `${m}:${String(s).padStart(2, "0")}`;
+			this.updateRestTimerDisplay();
 		}, 1000);
+
+		this.schedulePersist();
+	}
+
+	private updateRestTimerDisplay(): void {
+		if (!this.restStartTime || !this.restTimerEl) return;
+		const elapsed = Math.max(0, Math.floor((Date.now() - this.restStartTime) / 1000));
+		const m = Math.floor(elapsed / 60);
+		const s = elapsed % 60;
+		const valueEl = this.restTimerEl.querySelector(".ln-rest-timer-value") as HTMLElement;
+		if (valueEl) valueEl.textContent = `${m}:${String(s).padStart(2, "0")}`;
 	}
 
 	private stopRestTimer(): void {
@@ -272,6 +304,7 @@ export class WorkoutView extends ItemView {
 		if (this.restTimerEl) {
 			this.restTimerEl.addClass("ln-rest-timer-hidden");
 		}
+		this.schedulePersist();
 	}
 
 	private openExercisePicker(): void {
@@ -336,6 +369,44 @@ export class WorkoutView extends ItemView {
 
 		this.workout.exercises.push(newExercise);
 		this.renderWorkout();
+		this.schedulePersist();
+	}
+
+	private schedulePersist(): void {
+		if (this.persistTimeoutId !== null) {
+			window.clearTimeout(this.persistTimeoutId);
+		}
+		this.persistTimeoutId = window.setTimeout(() => {
+			this.persistTimeoutId = null;
+			void this.persistNow();
+		}, 500);
+	}
+
+	private async persistNow(): Promise<void> {
+		// Pull live state out of the card UI before saving.
+		if (this.exerciseCards.length > 0) {
+			this.workout.exercises = this.exerciseCards.map((c) => c.getExercise());
+		}
+		await this.plugin.saveActiveSession({
+			workout: this.workout,
+			startTimeMs: this.startTime.getTime(),
+			updatedAt: Date.now(),
+			restStartTimeMs: this.restStartTime,
+		});
+	}
+
+	private openExerciseDetails(name: string): void {
+		const libraryEntry = this.plugin.settings.exerciseLibrary.find(
+			(e) => e.name.toLowerCase() === name.toLowerCase()
+		);
+		const history = findPastSessionsForExercise(this.recentWorkouts, name, 5);
+		new ExerciseDetailsModal(
+			this.app,
+			name,
+			libraryEntry,
+			history,
+			this.plugin.settings.exerciseFolder
+		).open();
 	}
 
 	private async finishWorkout(): Promise<void> {
@@ -363,6 +434,7 @@ export class WorkoutView extends ItemView {
 
 		try {
 			await this.plugin.workoutStore.saveWorkout(this.workout);
+			await this.plugin.clearActiveSession();
 			new Notice("Workout saved!");
 			void this.plugin.showHomeView();
 		} catch (e) {
@@ -370,11 +442,18 @@ export class WorkoutView extends ItemView {
 		}
 	}
 
-	onClose(): Promise<void> {
+	async onClose(): Promise<void> {
 		if (this.timerIntervalId !== null) {
 			window.clearInterval(this.timerIntervalId);
 		}
 		this.stopRestTimer();
-		return Promise.resolve();
+		// Flush any pending persist so mobile tab-close doesn't lose the last edit.
+		if (this.persistTimeoutId !== null) {
+			window.clearTimeout(this.persistTimeoutId);
+			this.persistTimeoutId = null;
+			if (this.initialized) {
+				await this.persistNow();
+			}
+		}
 	}
 }

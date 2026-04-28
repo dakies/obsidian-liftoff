@@ -143,6 +143,42 @@ export class ExerciseLibraryModal extends Modal {
 		});
 		notesInput.value = entry.notes ?? "";
 
+		// Pause (seconds between sets)
+		row.createDiv({ cls: "ln-el-edit-label", text: "Pause (seconds)" });
+		const pauseInput = row.createEl("input", {
+			cls: "ln-el-edit-input",
+			attr: {
+				type: "number",
+				inputmode: "numeric",
+				min: "0",
+				step: "5",
+				value: entry.pause != null ? String(entry.pause) : "",
+				placeholder: "90",
+			},
+		});
+
+		// Recommended rep range
+		row.createDiv({ cls: "ln-el-edit-label", text: "Recommended reps" });
+		const repsInput = row.createEl("input", {
+			cls: "ln-el-edit-input",
+			attr: {
+				type: "text",
+				value: entry.recommendedReps ?? "",
+				placeholder: "8-12",
+			},
+		});
+
+		// Linked note (vault path)
+		row.createDiv({ cls: "ln-el-edit-label", text: "Linked note" });
+		const notePathInput = row.createEl("input", {
+			cls: "ln-el-edit-input",
+			attr: {
+				type: "text",
+				value: entry.notePath ?? "",
+				placeholder: "Exercises/Bench Press.md",
+			},
+		});
+
 		// Save / Cancel buttons
 		const btnRow = row.createDiv({ cls: "ln-el-edit-buttons" });
 
@@ -165,6 +201,11 @@ export class ExerciseLibraryModal extends Modal {
 			entry.name = newName;
 			entry.exerciseType = currentType === "weight" ? undefined : currentType;
 			entry.notes = notesInput.value.trim() || undefined;
+			entry.notePath = notePathInput.value.trim() || undefined;
+			const pauseRaw = pauseInput.value.trim();
+			const pauseNum = pauseRaw === "" ? NaN : Number(pauseRaw);
+			entry.pause = Number.isFinite(pauseNum) && pauseNum >= 0 ? pauseNum : undefined;
+			entry.recommendedReps = repsInput.value.trim() || undefined;
 			this.editingIndex = null;
 			this.save();
 			this.renderList();

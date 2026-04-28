@@ -40,6 +40,21 @@ export class LiftOffSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
+			.setName("Exercise folder")
+			.setDesc(
+				"Folder where per-exercise notes live (e.g. Exercises). The details modal auto-resolves a note named like the exercise from this folder, in addition to any explicit linked note."
+			)
+			.addText((text) =>
+				text
+					.setPlaceholder("Exercises")
+					.setValue(this.plugin.settings.exerciseFolder)
+					.onChange(async (value) => {
+						this.plugin.settings.exerciseFolder = value;
+						await this.plugin.saveSettings();
+					})
+			);
+
+		new Setting(containerEl)
 			.setName("Weight unit")
 			.setDesc("Default weight unit for new sets")
 			.addDropdown((dropdown) =>

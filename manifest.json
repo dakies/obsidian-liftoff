@@ -1,9 +1,9 @@
 {
-	"id": "liftoff",
-	"name": "LiftOff",
-	"version": "0.1.0",
+	"id": "liftoff-custom",
+	"name": "LiftOff (custom)",
+	"version": "0.1.0-custom.1",
 	"minAppVersion": "1.0.0",
-	"description": "Mobile-first gym workout tracker. Log sets, reps, and weights with speed-optimized UX. Data stored as markdown in your vault.",
-	"author": "Haris Pasic",
+	"description": "Fork of LiftOff: exercise headings are wikilinks so Exercise notes receive backlinks.",
+	"author": "dante (fork of Haris Pasic)",
 	"isDesktopOnly": false
 }

@@ -36,6 +36,8 @@ export class HomeView extends ItemView {
 		container.empty();
 		container.addClass("ln-home-view");
 
+		this.renderResumeBanner(container);
+
 		const startBtn = container.createEl("button", {
 			cls: "ln-start-workout-btn",
 			text: "+ start empty workout",
@@ -212,6 +214,60 @@ export class HomeView extends ItemView {
 				})();
 			}
 		).open();
+	}
+
+	private renderResumeBanner(container: HTMLElement): void {
+		const session = this.plugin.activeSession;
+		if (!session) return;
+
+		const banner = container.createDiv({ cls: "ln-resume-banner" });
+
+		const info = banner.createDiv({ cls: "ln-resume-info" });
+		info.createDiv({
+			cls: "ln-resume-title",
+			text: session.workout.template ?? "In-progress workout",
+		});
+
+		const elapsedMin = Math.max(
+			0,
+			Math.round((Date.now() - session.startTimeMs) / 60000)
+		);
+		const completedSets = session.workout.exercises.reduce(
+			(acc, ex) => acc + ex.sets.filter((s) => s.completed).length,
+			0
+		);
+		info.createDiv({
+			cls: "ln-resume-meta",
+			text: `${elapsedMin} min · ${completedSets} completed set${completedSets === 1 ? "" : "s"}`,
+		});
+
+		const actions = banner.createDiv({ cls: "ln-resume-actions" });
+
+		const resumeBtn = actions.createEl("button", {
+			cls: "ln-resume-btn",
+			text: "Resume",
+		});
+		resumeBtn.addEventListener("click", () => {
+			void this.plugin.resumeWorkout();
+		});
+
+		const discardBtn = actions.createEl("button", {
+			cls: "ln-resume-discard-btn",
+			text: "×",
+			attr: { "aria-label": "Discard in-progress workout" },
+		});
+		discardBtn.addEventListener("click", () => {
+			void (async () => {
+				const confirmed = await new ConfirmModal(
+					this.app,
+					"Discard in-progress workout? All unsaved sets will be lost."
+				).openAndWait();
+				if (confirmed) {
+					await this.plugin.clearActiveSession();
+					await this.renderHome();
+				}
+			})();
+		});
 	}
 
 	private openExerciseLibrary(): void {

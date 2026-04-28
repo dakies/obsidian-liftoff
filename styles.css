@@ -34,6 +34,76 @@
 	font-size: 13px;
 }
 
+/* --- Resume Banner --- */
+.ln-resume-banner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 12px 14px;
+	margin-bottom: 12px;
+	border-radius: 12px;
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+.ln-resume-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.ln-resume-title {
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.ln-resume-meta {
+	font-size: 11px;
+	opacity: 0.85;
+	margin-top: 2px;
+}
+
+.ln-resume-actions {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-shrink: 0;
+}
+
+.ln-resume-btn {
+	min-height: 36px;
+	padding: 8px 14px;
+	border-radius: 8px;
+	border: none;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 600;
+	background: rgba(255, 255, 255, 0.2);
+	color: var(--text-on-accent);
+}
+
+.ln-resume-btn:active {
+	opacity: 0.8;
+}
+
+.ln-resume-discard-btn {
+	min-height: 36px;
+	min-width: 36px;
+	padding: 4px 10px;
+	border-radius: 8px;
+	border: none;
+	cursor: pointer;
+	font-size: 18px;
+	line-height: 1;
+	background: transparent;
+	color: var(--text-on-accent);
+	opacity: 0.75;
+}
+
+.ln-resume-discard-btn:active {
+	opacity: 0.5;
+}
+
 /* --- Home View --- */
 .ln-start-workout-btn {
 	width: 100%;
@@ -203,6 +273,10 @@
 	background: var(--interactive-accent);
 	color: var(--text-on-accent);
 	font-variant-numeric: tabular-nums;
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .ln-rest-timer-hidden {
@@ -274,6 +348,23 @@
 .ln-exercise-set-count {
 	font-size: 11px;
 	color: var(--text-faint);
+}
+
+.ln-exercise-info-btn {
+	min-height: 32px;
+	min-width: 32px;
+	padding: 4px 8px;
+	border-radius: 8px;
+	border: none;
+	cursor: pointer;
+	font-size: 15px;
+	line-height: 1;
+	background: var(--background-modifier-hover);
+	color: var(--text-muted);
+}
+
+.ln-exercise-info-btn:active {
+	opacity: 0.7;
 }
 
 .ln-exercise-notes {
@@ -754,6 +845,10 @@
 	opacity: 0.8;
 }
 
+.ln-workout-bottom-spacer {
+	height: 80px;
+}
+
 /* --- Exercise Picker --- */
 .ln-exercise-picker {
 	padding: 8px;
@@ -867,6 +962,123 @@
 
 .ln-timer-btn:active {
 	opacity: 0.8;
+}
+
+/* --- Exercise Details Modal --- */
+.ln-exercise-details {
+	padding: 4px;
+}
+
+.ln-ed-header {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 12px;
+}
+
+.ln-ed-title {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.ln-ed-type-badge {
+	font-size: 12px;
+	padding: 2px 8px;
+	border-radius: 6px;
+	background: var(--background-modifier-hover);
+	color: var(--text-muted);
+}
+
+.ln-ed-section {
+	margin-bottom: 16px;
+}
+
+.ln-ed-stats {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 16px;
+}
+
+.ln-ed-stat {
+	flex: 1;
+	padding: 10px 12px;
+	border-radius: 8px;
+	background: var(--background-secondary);
+}
+
+.ln-ed-stat-label {
+	font-size: 10px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: var(--text-faint);
+	margin-bottom: 4px;
+}
+
+.ln-ed-stat-value {
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--text-normal);
+	font-variant-numeric: tabular-nums;
+}
+
+.ln-ed-section-label {
+	font-size: 10px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: var(--text-faint);
+	margin-bottom: 6px;
+}
+
+.ln-ed-notes {
+	font-size: 13px;
+	color: var(--text-normal);
+	white-space: pre-wrap;
+	padding: 10px;
+	border-radius: 8px;
+	background: var(--background-secondary);
+}
+
+.ln-ed-empty {
+	font-size: 12px;
+	color: var(--text-faint);
+	font-style: italic;
+}
+
+.ln-ed-open-note-btn {
+	padding: 10px 14px;
+	border-radius: 8px;
+	border: none;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 500;
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+.ln-ed-open-note-btn:active {
+	opacity: 0.8;
+}
+
+.ln-ed-history-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 10px;
+	margin-bottom: 4px;
+	border-radius: 8px;
+	background: var(--background-secondary);
+	font-size: 13px;
+}
+
+.ln-ed-history-date {
+	color: var(--text-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+.ln-ed-history-summary {
+	color: var(--text-normal);
+	font-weight: 500;
 }
 
 /* --- Modals --- */

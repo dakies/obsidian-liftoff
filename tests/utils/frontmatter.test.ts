@@ -39,7 +39,7 @@ describe("workoutToMarkdownBody", () => {
 	it("generates readable markdown tables", () => {
 		const result = workoutToMarkdownBody(sampleWorkout);
 		expect(result).toContain("# Push Day");
-		expect(result).toContain("## Bench Press");
+		expect(result).toContain("## [[Bench Press]]");
 		expect(result).toContain("| 1   | 80 kg  | 10   |");
 		expect(result).toContain("| 2   | 90 kg  | 8    |");
 		expect(result).toContain("| Set | Weight | Reps |");
@@ -86,7 +86,7 @@ describe("timer exercise frontmatter", () => {
 describe("timer exercise markdown body", () => {
 	it("renders interval summary for timer exercises", () => {
 		const result = workoutToMarkdownBody(timerWorkout);
-		expect(result).toContain("## Burpees");
+		expect(result).toContain("## [[Burpees]]");
 		expect(result).toContain("5");
 		expect(result).toContain("0:40");
 		expect(result).toContain("0:20");

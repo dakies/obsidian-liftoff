@@ -43,11 +43,22 @@ export interface ExerciseLibraryEntry {
 	name: string;
 	exerciseType?: ExerciseType;
 	notes?: string;
+	notePath?: string;
+	pause?: number; // seconds rest between sets
+	recommendedReps?: string; // e.g. "8-12" or "5"
+}
+
+export interface ActiveSession {
+	workout: Workout;
+	startTimeMs: number;
+	updatedAt: number;
+	restStartTimeMs?: number | null;
 }
 
 export interface LiftOffSettings {
 	workoutFolder: string;
 	templateFolder: string;
+	exerciseFolder: string;
 	weightUnit: "kg" | "lbs";
 	restTimerPresets: number[]; // seconds
 	defaultRestDuration: number; // seconds
@@ -59,6 +70,7 @@ export interface LiftOffSettings {
 export const DEFAULT_SETTINGS: LiftOffSettings = {
 	workoutFolder: "Workouts",
 	templateFolder: "Workout Templates",
+	exerciseFolder: "Exercises",
 	weightUnit: "kg",
 	restTimerPresets: [30, 60, 90, 120],
 	defaultRestDuration: 90,

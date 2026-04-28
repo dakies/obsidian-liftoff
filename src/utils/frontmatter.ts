@@ -56,7 +56,7 @@ export function workoutToMarkdownBody(workout: Workout): string {
 	const lines: string[] = [`# ${title} — ${formattedDate}`, ""];
 
 	for (const exercise of workout.exercises) {
-		lines.push(`## ${exercise.name}`);
+		lines.push(`## [[${exercise.name}]]`);
 		if (exercise.exerciseType === "timer") {
 			const w = formatTime(exercise.workSeconds ?? 0);
 			const r = formatTime(exercise.restSeconds ?? 0);

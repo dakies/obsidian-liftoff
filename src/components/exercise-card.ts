@@ -6,6 +6,7 @@ import { TimerBlock } from "./timer-block";
 export interface ExerciseCardCallbacks {
 	onExerciseChanged: (exercise: Exercise) => void;
 	onSetCompleted?: (set: WorkoutSet) => void;
+	onShowDetails?: () => void;
 }
 
 interface SetRowLike {
@@ -67,6 +68,18 @@ export class ExerciseCard {
 			headerRight.createSpan({
 				cls: "ln-exercise-set-count",
 				text: `${completedCount}/${this.exercise.sets.length}`,
+			});
+		}
+
+		if (this.callbacks.onShowDetails) {
+			const infoBtn = headerRight.createEl("button", {
+				cls: "ln-exercise-info-btn",
+				text: "ⓘ",
+				attr: { "aria-label": "Exercise details" },
+			});
+			infoBtn.addEventListener("click", (e) => {
+				e.stopPropagation();
+				this.callbacks.onShowDetails?.();
 			});
 		}
 

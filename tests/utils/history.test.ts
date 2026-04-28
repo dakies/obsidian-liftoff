@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { findLastSetsForExercise } from "../../src/utils/history";
+import { findLastSetsForExercise, findPastSessionsForExercise } from "../../src/utils/history";
 import type { Workout } from "../../src/types";
 
 const workouts: Workout[] = [
@@ -62,5 +62,30 @@ describe("findLastSetsForExercise", () => {
 		const result = findLastSetsForExercise(workouts, "bench press");
 		expect(result).not.toBeNull();
 		expect(result!.sets[0]!.weight).toBe(80);
+	});
+});
+
+describe("findPastSessionsForExercise", () => {
+	it("returns all past sessions newest-first", () => {
+		const result = findPastSessionsForExercise(workouts, "Bench Press");
+		expect(result).toHaveLength(2);
+		expect(result[0]!.date).toBe("2026-03-19");
+		expect(result[1]!.date).toBe("2026-03-15");
+	});
+
+	it("respects the limit parameter", () => {
+		const result = findPastSessionsForExercise(workouts, "Bench Press", 1);
+		expect(result).toHaveLength(1);
+		expect(result[0]!.date).toBe("2026-03-19");
+	});
+
+	it("returns an empty array for unknown exercise", () => {
+		const result = findPastSessionsForExercise(workouts, "Squat");
+		expect(result).toEqual([]);
+	});
+
+	it("matches case-insensitively", () => {
+		const result = findPastSessionsForExercise(workouts, "bench press");
+		expect(result).toHaveLength(2);
 	});
 });
