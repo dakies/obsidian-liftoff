@@ -22,6 +22,7 @@ export class WorkoutView extends ItemView {
 	private recentWorkouts: Workout[] = [];
 	private initialized = false;
 	private persistTimeoutId: number | null = null;
+	private finished = false;
 
 	constructor(leaf: WorkspaceLeaf, plugin: LiftOffPlugin) {
 		super(leaf);
@@ -373,6 +374,7 @@ export class WorkoutView extends ItemView {
 	}
 
 	private schedulePersist(): void {
+		if (this.finished) return;
 		if (this.persistTimeoutId !== null) {
 			window.clearTimeout(this.persistTimeoutId);
 		}
@@ -434,6 +436,11 @@ export class WorkoutView extends ItemView {
 
 		try {
 			await this.plugin.workoutStore.saveWorkout(this.workout);
+			this.finished = true;
+			if (this.persistTimeoutId !== null) {
+				window.clearTimeout(this.persistTimeoutId);
+				this.persistTimeoutId = null;
+			}
 			await this.plugin.clearActiveSession();
 			new Notice("Workout saved!");
 			void this.plugin.showHomeView();
@@ -451,7 +458,7 @@ export class WorkoutView extends ItemView {
 		if (this.persistTimeoutId !== null) {
 			window.clearTimeout(this.persistTimeoutId);
 			this.persistTimeoutId = null;
-			if (this.initialized) {
+			if (this.initialized && !this.finished) {
 				await this.persistNow();
 			}
 		}
