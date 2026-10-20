@@ -39,6 +39,20 @@ export class LiftOffSettingTab extends PluginSettingTab {
 					})
 			);
 
+		/* eslint-disable obsidianmd/ui/sentence-case -- German UI text capitalizes nouns */
+		new Setting(containerEl)
+			.setName("Vorlagen im Quelltextmodus öffnen")
+			.setDesc("Workout-Vorlagen als rohes YAML öffnen statt im Eigenschaften-Editor.")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.templatesInSourceMode)
+					.onChange(async (value) => {
+						this.plugin.settings.templatesInSourceMode = value;
+						await this.plugin.saveSettings();
+					})
+			);
+		/* eslint-enable obsidianmd/ui/sentence-case */
+
 		new Setting(containerEl)
 			.setName("Exercise folder")
 			.setDesc(

@@ -11,6 +11,7 @@ import { TemplateStore } from "./storage/template-store";
 import { HomeView, HOME_VIEW_TYPE } from "./views/home-view";
 import { WorkoutView, WORKOUT_VIEW_TYPE } from "./views/workout-view";
 import { ConfirmModal } from "./components/modals";
+import { TemplateSourceMode } from "./template-source-mode";
 
 interface PersistedData {
 	settings: LiftOffSettings;
@@ -33,6 +34,8 @@ export default class LiftOffPlugin extends Plugin {
 		this.registerView(WORKOUT_VIEW_TYPE, (leaf) => new WorkoutView(leaf, this));
 
 		this.addSettingTab(new LiftOffSettingTab(this.app, this));
+
+		new TemplateSourceMode(this).register();
 
 		this.addRibbonIcon("dumbbell", "Open liftoff", () => {
 			void this.openLiftoff();

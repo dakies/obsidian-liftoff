@@ -61,6 +61,7 @@ export interface LiftOffSettings {
 	workoutFolder: string;
 	templateFolder: string;
 	exerciseFolder: string;
+	templatesInSourceMode: boolean; // open template notes as raw YAML
 	weightUnit: "kg" | "lbs";
 	restTimerPresets: number[]; // seconds
 	defaultRestDuration: number; // seconds
@@ -73,6 +74,7 @@ export const DEFAULT_SETTINGS: LiftOffSettings = {
 	workoutFolder: "Workouts",
 	templateFolder: "Workout Templates",
 	exerciseFolder: "Exercises",
+	templatesInSourceMode: true,
 	weightUnit: "kg",
 	restTimerPresets: [30, 60, 90, 120],
 	defaultRestDuration: 90,

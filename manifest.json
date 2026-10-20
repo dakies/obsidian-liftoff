@@ -1,7 +1,7 @@
 {
 	"id": "liftoff-custom",
 	"name": "LiftOff (custom)",
-	"version": "0.1.0-custom.2",
+	"version": "0.1.0-custom.3",
 	"minAppVersion": "1.0.0",
 	"description": "Fork of LiftOff: exercise headings are wikilinks so Exercise notes receive backlinks.",
 	"author": "dante (fork of Haris Pasic)",
