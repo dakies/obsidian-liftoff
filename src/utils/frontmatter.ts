@@ -1,4 +1,4 @@
-import type { Workout } from "../types";
+import type { Exercise, Workout, WorkoutSet } from "../types";
 
 export function workoutToFrontmatter(workout: Workout): string {
 	const lines: string[] = ["---"];
@@ -25,6 +25,9 @@ export function workoutToFrontmatter(workout: Workout): string {
 			lines.push(`    restSeconds: ${exercise.restSeconds ?? 0}`);
 			lines.push(`    intervals: ${exercise.intervals ?? 0}`);
 		} else {
+			if (exercise.rir !== undefined) {
+				lines.push(`    rir: ${exercise.rir}`);
+			}
 			lines.push("    sets:");
 			for (const set of exercise.sets) {
 				lines.push(`      - { weight: ${set.weight}, reps: ${set.reps}, unit: ${set.unit} }`);
@@ -63,6 +66,9 @@ export function workoutToMarkdownBody(workout: Workout): string {
 			const n = exercise.intervals ?? 0;
 			lines.push(`Intervals: ${n} \u00D7 ${w} work / ${r} rest`);
 		} else {
+			if (exercise.rir !== undefined) {
+				lines.push(`RIR letzter Satz: ${exercise.rir}`, "");
+			}
 			lines.push("| Set | Weight | Reps |");
 			lines.push("|-----|--------|------|");
 			exercise.sets.forEach((set, i) => {
@@ -76,6 +82,70 @@ export function workoutToMarkdownBody(workout: Workout): string {
 	}
 
 	return lines.join("\n").trimEnd();
+}
+
+/** Parse a session note's frontmatter (as delivered by the metadata cache). */
+export function frontmatterToWorkout(fm: Record<string, unknown>): Workout | null {
+	if (fm.type !== "workout") return null;
+
+	const exercises: Exercise[] = [];
+	if (Array.isArray(fm.exercises)) {
+		for (const ex of fm.exercises as Array<Record<string, unknown>>) {
+			const isTimer = ex.exerciseType === "timer";
+			if (isTimer) {
+				exercises.push({
+					name: String(ex.name),
+					exerciseType: "timer",
+					sets: [],
+					workSeconds: Number(ex.workSeconds) || 0,
+					restSeconds: Number(ex.restSeconds) || 0,
+					intervals: Number(ex.intervals) || 0,
+				});
+			} else {
+				const sets: WorkoutSet[] = [];
+				if (Array.isArray(ex.sets)) {
+					for (const s of ex.sets as Array<Record<string, unknown>>) {
+						sets.push({
+							weight: Number(s.weight) || 0,
+							reps: Number(s.reps) || 0,
+							unit: s.unit === "lbs" ? "lbs" : "kg",
+							completed: true,
+						});
+					}
+				}
+				const exercise: Exercise = {
+					name: String(ex.name),
+					sets,
+				};
+				const rir = parseRir(ex.rir);
+				if (rir !== undefined) exercise.rir = rir;
+				exercises.push(exercise);
+			}
+		}
+	}
+
+	return {
+		type: "workout",
+		template: (fm.template as string) ?? null,
+		date: String(fm.date),
+		start: scalarToString(fm.start),
+		end: scalarToString(fm.end) || null,
+		duration: fm.duration ? Number(fm.duration) : null,
+		exercises,
+	};
+}
+
+function scalarToString(v: unknown): string {
+	if (typeof v === "string") return v;
+	if (typeof v === "number") return String(v);
+	return "";
+}
+
+/** RIR from frontmatter or user input; undefined when empty or invalid. */
+export function parseRir(raw: unknown): number | undefined {
+	if (raw === null || raw === undefined || raw === "") return undefined;
+	const n = Number(raw);
+	return Number.isFinite(n) && n >= 0 ? n : undefined;
 }
 
 export function workoutToFullMarkdown(workout: Workout): string {

@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { workoutToFrontmatter, workoutToMarkdownBody } from "../../src/utils/frontmatter";
+import {
+	frontmatterToWorkout,
+	parseRir,
+	workoutToFrontmatter,
+	workoutToMarkdownBody,
+} from "../../src/utils/frontmatter";
 import type { Workout } from "../../src/types";
 
 const sampleWorkout: Workout = {
@@ -91,5 +96,67 @@ describe("timer exercise markdown body", () => {
 		expect(result).toContain("0:40");
 		expect(result).toContain("0:20");
 		expect(result).not.toContain("Weight");
+	});
+});
+
+describe("RIR", () => {
+	const withRir: Workout = {
+		...sampleWorkout,
+		exercises: [{ ...sampleWorkout.exercises[0]!, rir: 2 }],
+	};
+
+	it("writes rir only when set", () => {
+		expect(workoutToFrontmatter(withRir)).toContain("  - name: Bench Press\n    rir: 2\n    sets:");
+		expect(workoutToFrontmatter(sampleWorkout)).not.toContain("rir:");
+		expect(workoutToMarkdownBody(withRir)).toContain("## [[Bench Press]]\nRIR letzter Satz: 2\n\n| Set |");
+		expect(workoutToMarkdownBody(sampleWorkout)).not.toContain("RIR");
+	});
+
+	it("round-trips through frontmatter parsing", () => {
+		// Shape the metadata cache delivers for the serialized frontmatter above.
+		const fm = {
+			type: "workout",
+			template: "Push Day",
+			date: "2026-03-21",
+			start: "14:30",
+			end: "15:45",
+			duration: 75,
+			exercises: [
+				{
+					name: "Bench Press",
+					rir: 2,
+					sets: [
+						{ weight: 80, reps: 10, unit: "kg" },
+						{ weight: 90, reps: 8, unit: "kg" },
+					],
+				},
+			],
+		};
+		const parsed = frontmatterToWorkout(fm);
+		expect(parsed).toEqual(withRir);
+		expect(workoutToFrontmatter(parsed!)).toBe(workoutToFrontmatter(withRir));
+	});
+
+	it("parses sessions without rir", () => {
+		const parsed = frontmatterToWorkout({
+			type: "workout",
+			date: "2026-03-21",
+			exercises: [{ name: "Bench Press", sets: [{ weight: 80, reps: 10, unit: "kg" }] }],
+		});
+		expect(parsed?.exercises[0]?.rir).toBeUndefined();
+		expect(parsed?.exercises[0]).not.toHaveProperty("rir");
+	});
+
+	it("rejects invalid rir values", () => {
+		expect(parseRir("")).toBeUndefined();
+		expect(parseRir(null)).toBeUndefined();
+		expect(parseRir("-1")).toBeUndefined();
+		expect(parseRir("abc")).toBeUndefined();
+		expect(parseRir("0")).toBe(0);
+		expect(parseRir(3)).toBe(3);
+	});
+
+	it("ignores non-workout frontmatter", () => {
+		expect(frontmatterToWorkout({ type: "workout-template" })).toBeNull();
 	});
 });

@@ -11,6 +11,7 @@ export interface Exercise {
 	name: string;
 	exerciseType?: ExerciseType;
 	sets: WorkoutSet[];
+	rir?: number; // reps in reserve on the last set
 	// Timer-specific (only used when exerciseType === "timer")
 	workSeconds?: number;
 	restSeconds?: number;
@@ -53,6 +54,7 @@ export interface ActiveSession {
 	startTimeMs: number;
 	updatedAt: number;
 	restStartTimeMs?: number | null;
+	lastSetCompletedMs?: number | null;
 }
 
 export interface LiftOffSettings {

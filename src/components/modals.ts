@@ -1,6 +1,7 @@
-import { App, Modal, TFile } from "obsidian";
+import { App, Modal } from "obsidian";
 import type { ExerciseLibraryEntry } from "../types";
 import type { LastExerciseData } from "../utils/history";
+import { resolveExerciseNote, type ResolvedExerciseNote } from "../utils/exercise-note";
 
 export class ConfirmModal extends Modal {
 	private message: string;
@@ -133,7 +134,12 @@ export class ExerciseDetailsModal extends Modal {
 		}
 
 		// Resolve linked note up front; its frontmatter overrides library values.
-		const resolved = this.resolveExerciseNote();
+		const resolved = resolveExerciseNote(
+			this.app,
+			this.exerciseName,
+			this.libraryEntry,
+			this.exerciseFolder
+		);
 		const fm = resolved
 			? this.app.metadataCache.getFileCache(resolved.file)?.frontmatter ?? null
 			: null;
@@ -189,7 +195,7 @@ export class ExerciseDetailsModal extends Modal {
 
 	private renderLinkedNoteSection(
 		contentEl: HTMLElement,
-		resolved: { file: TFile; linkText: string } | null
+		resolved: ResolvedExerciseNote | null
 	): void {
 		const section = contentEl.createDiv({ cls: "ln-ed-section" });
 		section.createDiv({ cls: "ln-ed-section-label", text: "Linked note" });
@@ -211,32 +217,6 @@ export class ExerciseDetailsModal extends Modal {
 			this.close();
 			void this.app.workspace.openLinkText(linkText, "", true);
 		});
-	}
-
-	private resolveExerciseNote(): { file: TFile; linkText: string } | null {
-		// 1. Explicit per-entry path
-		const explicit = this.libraryEntry?.notePath?.trim();
-		if (explicit) {
-			const direct = this.app.vault.getAbstractFileByPath(explicit);
-			if (direct instanceof TFile) return { file: direct, linkText: explicit };
-			// Allow extensionless input like "Exercises/Bench Press"
-			const withExt = this.app.vault.getAbstractFileByPath(`${explicit}.md`);
-			if (withExt instanceof TFile) return { file: withExt, linkText: `${explicit}.md` };
-		}
-
-		// 2. `<exerciseFolder>/<name>.md`
-		const folder = this.exerciseFolder.trim().replace(/\/+$/, "");
-		if (folder) {
-			const path = `${folder}/${this.exerciseName}.md`;
-			const inFolder = this.app.vault.getAbstractFileByPath(path);
-			if (inFolder instanceof TFile) return { file: inFolder, linkText: path };
-		}
-
-		// 3. Obsidian wikilink resolution (matches how `[[<name>]]` is resolved)
-		const byLink = this.app.metadataCache.getFirstLinkpathDest(this.exerciseName, "");
-		if (byLink instanceof TFile) return { file: byLink, linkText: this.exerciseName };
-
-		return null;
 	}
 
 	private summarize(session: LastExerciseData): string {

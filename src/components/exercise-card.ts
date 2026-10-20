@@ -1,5 +1,7 @@
 import type { Exercise, WorkoutSet, LiftOffSettings } from "../types";
 import type { LastExerciseData } from "../utils/history";
+import type { NextTarget } from "../utils/progression";
+import { parseRir } from "../utils/frontmatter";
 import { SetRow } from "./set-row";
 import { TimerBlock } from "./timer-block";
 
@@ -25,6 +27,7 @@ export class ExerciseCard {
 		parentEl: HTMLElement,
 		private exercise: Exercise,
 		private lastData: LastExerciseData | null,
+		private target: NextTarget | null,
 		private settings: LiftOffSettings,
 		private callbacks: ExerciseCardCallbacks
 	) {
@@ -150,6 +153,15 @@ export class ExerciseCard {
 	}
 
 	private renderWeightSets(): void {
+		// Double-progression target for today
+		if (this.target) {
+			const targetEl = this.containerEl.createDiv({
+				cls: `ln-exercise-target ln-exercise-target-${this.target.kind}`,
+			});
+			targetEl.createSpan({ cls: "ln-exercise-target-label", text: "Ziel: " });
+			targetEl.createSpan({ text: this.target.text });
+		}
+
 		// Column headers
 		const colHeaders = this.containerEl.createDiv({ cls: "ln-set-row ln-set-header" });
 		colHeaders.createSpan({ cls: "ln-set-number", text: "SET" });
@@ -185,6 +197,31 @@ export class ExerciseCard {
 			};
 			this.exercise.sets.push(newSet);
 			this.render();
+			this.callbacks.onExerciseChanged(this.exercise);
+		});
+
+		this.renderRirInput();
+	}
+
+	private renderRirInput(): void {
+		const rirRow = this.containerEl.createDiv({ cls: "ln-rir-row" });
+		// eslint-disable-next-line obsidianmd/ui/sentence-case -- German nouns and the RIR acronym are capitalized
+		const label = rirRow.createEl("label", { cls: "ln-rir-label", text: "RIR letzter Satz" });
+		const input = label.createEl("input", {
+			cls: "ln-set-input ln-rir-input",
+			attr: {
+				type: "number",
+				inputmode: "numeric",
+				min: "0",
+				max: "10",
+				placeholder: "–",
+			},
+		});
+		if (this.exercise.rir !== undefined) {
+			input.value = String(this.exercise.rir);
+		}
+		input.addEventListener("input", () => {
+			this.exercise.rir = parseRir(input.value.trim());
 			this.callbacks.onExerciseChanged(this.exercise);
 		});
 	}
@@ -255,11 +292,16 @@ export class ExerciseCard {
 					: [],
 			};
 		}
-		return {
+		const exercise: Exercise = {
 			name: this.exercise.name,
 			exerciseType: this.exercise.exerciseType,
-			sets: this.setRows.map((r) => r.getSet()),
+			// Collapsed cards have no set rows; this.exercise.sets is kept in sync by the row callbacks.
+			sets: this.setRows.length > 0
+				? this.setRows.map((r) => r.getSet())
+				: this.exercise.sets.map((set) => ({ ...set })),
 		};
+		if (this.exercise.rir !== undefined) exercise.rir = this.exercise.rir;
+		return exercise;
 	}
 
 	destroy(): void {

@@ -7,6 +7,9 @@ import { ExercisePickerModal } from "../components/exercise-picker";
 import { ConfirmModal, ExerciseDetailsModal } from "../components/modals";
 import { TimerModal } from "./timer-view";
 import { findLastSetsForExercise, findPastSessionsForExercise } from "../utils/history";
+import { resolveExerciseNote } from "../utils/exercise-note";
+import { computeNextTarget, normalizeDate, parseRepRange, type NextTarget } from "../utils/progression";
+import { resolveFinishTime } from "../utils/finish-time";
 
 export const WORKOUT_VIEW_TYPE = "liftoff-workout";
 
@@ -18,6 +21,7 @@ export class WorkoutView extends ItemView {
 	private timerIntervalId: number | null = null;
 	private restTimerIntervalId: number | null = null;
 	private restStartTime: number | null = null;
+	private lastSetCompletedMs: number | null = null;
 	private restTimerEl: HTMLElement | null = null;
 	private recentWorkouts: Workout[] = [];
 	private initialized = false;
@@ -91,6 +95,7 @@ export class WorkoutView extends ItemView {
 			};
 		});
 		this.startTime = new Date();
+		this.lastSetCompletedMs = null;
 		this.loadRecentWorkouts();
 		this.autoFillFromHistory();
 		this.renderWorkout();
@@ -101,6 +106,7 @@ export class WorkoutView extends ItemView {
 		this.initialized = true;
 		this.workout = this.createEmptyWorkout();
 		this.startTime = new Date();
+		this.lastSetCompletedMs = null;
 		this.loadRecentWorkouts();
 		this.renderWorkout();
 		this.schedulePersist();
@@ -112,6 +118,8 @@ export class WorkoutView extends ItemView {
 		this.initialized = true;
 		this.workout = saved.workout;
 		this.startTime = new Date(saved.startTimeMs);
+		// Sessions saved before lastSetCompletedMs existed: the rest timer starts on set completion.
+		this.lastSetCompletedMs = saved.lastSetCompletedMs ?? saved.restStartTimeMs ?? null;
 		this.loadRecentWorkouts();
 		this.renderWorkout();
 		if (saved.restStartTimeMs) {
@@ -120,7 +128,8 @@ export class WorkoutView extends ItemView {
 	}
 
 	private loadRecentWorkouts(): void {
-		const recentMeta = this.plugin.workoutStore.getRecentWorkouts(20);
+		// Full history: progression targets need every past session of an exercise.
+		const recentMeta = this.plugin.workoutStore.getRecentWorkouts(Infinity);
 		const workouts: Workout[] = [];
 		for (const meta of recentMeta) {
 			const w = this.plugin.workoutStore.parseWorkoutFile(meta.path);
@@ -205,16 +214,19 @@ export class WorkoutView extends ItemView {
 		const exercisesEl = container.createDiv({ cls: "ln-exercises" });
 		for (const exercise of this.workout.exercises) {
 			const lastData = findLastSetsForExercise(this.recentWorkouts, exercise.name);
+			const target = exercise.exerciseType === "timer" ? null : this.computeTarget(exercise.name);
 			const card = new ExerciseCard(
 				exercisesEl,
 				exercise,
 				lastData,
+				target,
 				this.plugin.settings,
 				{
 					onExerciseChanged: () => {
 						this.schedulePersist();
 					},
 					onSetCompleted: () => {
+						this.lastSetCompletedMs = Date.now();
 						this.startRestTimer();
 						this.schedulePersist();
 					},
@@ -394,6 +406,26 @@ export class WorkoutView extends ItemView {
 			startTimeMs: this.startTime.getTime(),
 			updatedAt: Date.now(),
 			restStartTimeMs: this.restStartTime,
+			lastSetCompletedMs: this.lastSetCompletedMs,
+		});
+	}
+
+	private computeTarget(name: string): NextTarget | null {
+		const libraryEntry = this.plugin.settings.exerciseLibrary.find(
+			(e) => e.name.toLowerCase() === name.toLowerCase()
+		);
+		const note = resolveExerciseNote(
+			this.app,
+			name,
+			libraryEntry,
+			this.plugin.settings.exerciseFolder
+		);
+		const fm = note ? this.app.metadataCache.getFileCache(note.file)?.frontmatter : undefined;
+		const history = findPastSessionsForExercise(this.recentWorkouts, name, Infinity);
+		return computeNextTarget(history, {
+			range: parseRepRange(fm?.reps ?? libraryEntry?.recommendedReps),
+			bodyweight: fm?.bodyweight === true || fm?.bodyweight === "true",
+			since: normalizeDate(fm?.since),
 		});
 	}
 
@@ -426,9 +458,14 @@ export class WorkoutView extends ItemView {
 			return;
 		}
 
-		const now = new Date();
-		this.workout.end = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-		this.workout.duration = Math.round((now.getTime() - this.startTime.getTime()) / 60000);
+		const nowMs = Date.now();
+		const endMs = resolveFinishTime(this.startTime.getTime(), nowMs, this.lastSetCompletedMs);
+		const end = new Date(endMs);
+		this.workout.end = `${String(end.getHours()).padStart(2, "0")}:${String(end.getMinutes()).padStart(2, "0")}`;
+		this.workout.duration = Math.round((endMs - this.startTime.getTime()) / 60000);
+		if (endMs !== nowMs) {
+			new Notice(`Ende auf ${this.workout.end} gesetzt (letzter Satz + 5 min).`);
+		}
 
 		for (const exercise of this.workout.exercises) {
 			exercise.sets = exercise.sets.filter((s) => s.completed);

@@ -381,6 +381,24 @@
 	margin-top: 4px;
 }
 
+.ln-exercise-target {
+	font-size: 13px;
+	color: var(--text-normal);
+	margin: 6px 0 10px;
+	padding: 6px 10px;
+	border-radius: 8px;
+	background: var(--background-primary);
+	border-left: 3px solid var(--interactive-accent);
+}
+
+.ln-exercise-target.ln-exercise-target-increase-weight {
+	border-left-color: var(--color-green);
+}
+
+.ln-exercise-target-label {
+	font-weight: 600;
+}
+
 /* --- Set Row --- */
 .ln-set-row {
 	display: grid;
@@ -472,6 +490,24 @@
 
 .ln-add-set-btn:active {
 	opacity: 0.7;
+}
+
+.ln-rir-row {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 8px;
+}
+
+.ln-rir-label {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 12px;
+	color: var(--text-muted);
+}
+
+.ln-rir-input.ln-set-input {
+	width: 64px;
 }
 
 /* --- Timer Block --- */
