@@ -1,4 +1,4 @@
-import type { Exercise, WorkoutSet, LiftOffSettings } from "../types";
+import type { Exercise, WorkoutSet, WorkoutsSettings } from "../types";
 import type { LastExerciseData } from "../utils/history";
 import type { NextTarget } from "../utils/progression";
 import { parseRir } from "../utils/frontmatter";
@@ -28,7 +28,7 @@ export class ExerciseCard {
 		private exercise: Exercise,
 		private lastData: LastExerciseData | null,
 		private target: NextTarget | null,
-		private settings: LiftOffSettings,
+		private settings: WorkoutsSettings,
 		private callbacks: ExerciseCardCallbacks
 	) {
 		this.expanded = true;

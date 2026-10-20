@@ -1,5 +1,5 @@
 import { ItemView, WorkspaceLeaf, Notice } from "obsidian";
-import type LiftOffPlugin from "../main";
+import type WorkoutsPlugin from "../main";
 import type { Workout, Exercise, ExerciseType } from "../types";
 import type { WorkoutTemplate } from "../types";
 import { ExerciseCard } from "../components/exercise-card";
@@ -11,10 +11,10 @@ import { resolveExerciseNote } from "../utils/exercise-note";
 import { computeNextTarget, normalizeDate, parseRepRange, type NextTarget } from "../utils/progression";
 import { resolveFinishTime } from "../utils/finish-time";
 
-export const WORKOUT_VIEW_TYPE = "liftoff-workout";
+export const WORKOUT_VIEW_TYPE = "workouts-workout";
 
 export class WorkoutView extends ItemView {
-	private plugin: LiftOffPlugin;
+	private plugin: WorkoutsPlugin;
 	private workout: Workout;
 	private exerciseCards: ExerciseCard[] = [];
 	private startTime: Date;
@@ -28,7 +28,7 @@ export class WorkoutView extends ItemView {
 	private persistTimeoutId: number | null = null;
 	private finished = false;
 
-	constructor(leaf: WorkspaceLeaf, plugin: LiftOffPlugin) {
+	constructor(leaf: WorkspaceLeaf, plugin: WorkoutsPlugin) {
 		super(leaf);
 		this.plugin = plugin;
 		this.startTime = new Date();
@@ -40,7 +40,7 @@ export class WorkoutView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return "Liftoff - workout";
+		return "Workout";
 	}
 
 	getIcon(): string {

@@ -1,10 +1,10 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import type LiftOffPlugin from "./main";
+import type WorkoutsPlugin from "./main";
 
-export class LiftOffSettingTab extends PluginSettingTab {
-	plugin: LiftOffPlugin;
+export class WorkoutsSettingTab extends PluginSettingTab {
+	plugin: WorkoutsPlugin;
 
-	constructor(app: App, plugin: LiftOffPlugin) {
+	constructor(app: App, plugin: WorkoutsPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}

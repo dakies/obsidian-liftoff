@@ -57,7 +57,7 @@ export interface ActiveSession {
 	lastSetCompletedMs?: number | null;
 }
 
-export interface LiftOffSettings {
+export interface WorkoutsSettings {
 	workoutFolder: string;
 	templateFolder: string;
 	exerciseFolder: string;
@@ -70,7 +70,7 @@ export interface LiftOffSettings {
 	exerciseLibrary: ExerciseLibraryEntry[];
 }
 
-export const DEFAULT_SETTINGS: LiftOffSettings = {
+export const DEFAULT_SETTINGS: WorkoutsSettings = {
 	workoutFolder: "Workouts",
 	templateFolder: "Workout Templates",
 	exerciseFolder: "Exercises",

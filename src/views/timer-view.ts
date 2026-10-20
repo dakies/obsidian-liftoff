@@ -1,12 +1,12 @@
 import { App, Modal, Notice } from "obsidian";
 import { TimerDisplay } from "../components/timer-display";
-import type { LiftOffSettings } from "../types";
+import type { WorkoutsSettings } from "../types";
 
 export class TimerModal extends Modal {
 	private timerDisplay: TimerDisplay | null = null;
-	private settings: LiftOffSettings;
+	private settings: WorkoutsSettings;
 
-	constructor(app: App, settings: LiftOffSettings) {
+	constructor(app: App, settings: WorkoutsSettings) {
 		super(app);
 		this.settings = settings;
 	}

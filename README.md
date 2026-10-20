@@ -1,6 +1,6 @@
-# LiftOff
+# Workouts
 
-Mobile-first gym workout tracker for [Obsidian](https://obsidian.md). Log sets, reps, and weights with speed-optimized UX. All data stored as markdown in your vault.
+Mobile-first gym workout tracker for [Obsidian](https://obsidian.md). Personal fork of [LiftOff](https://github.com/hpasic/obsidian-liftoff) by Haris Pasic. Log sets, reps, and weights with speed-optimized UX. All data stored as markdown in your vault.
 
 <p align="center">
   <img src="screenshots/home-mobile.png" width="300" alt="Home screen with templates and recent workouts" />
@@ -45,15 +45,9 @@ Configure workout and template folders, default weight unit, and rest timer pres
 
 ## Installation
 
-### From Community Plugins
+This fork is not published to Community Plugins; install it manually.
 
-1. Open Settings > Community Plugins
-2. Search for "LiftOff"
-3. Click Install, then Enable
-
-### Manual
-
-1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/hpasic/obsidian-liftoff/releases/latest)
-2. Create a folder `your-vault/.obsidian/plugins/liftoff/`
-3. Copy the downloaded files into that folder
+1. Build the plugin: `npm install && npm run build`
+2. Create a folder `your-vault/.obsidian/plugins/obsidian-workouts/`
+3. Copy `main.js`, `manifest.json`, and `styles.css` into that folder
 4. Enable the plugin in Settings > Community Plugins

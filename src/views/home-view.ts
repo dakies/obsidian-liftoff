@@ -1,16 +1,16 @@
 import { ItemView, WorkspaceLeaf, Notice } from "obsidian";
-import type LiftOffPlugin from "../main";
+import type WorkoutsPlugin from "../main";
 import type { WorkoutTemplate } from "../types";
 import { TextInputModal, ConfirmModal } from "../components/modals";
 import { TemplateEditorModal } from "../components/template-editor";
 import { ExerciseLibraryModal } from "../components/exercise-library";
 
-export const HOME_VIEW_TYPE = "liftoff-home";
+export const HOME_VIEW_TYPE = "workouts-home";
 
 export class HomeView extends ItemView {
-	private plugin: LiftOffPlugin;
+	private plugin: WorkoutsPlugin;
 
-	constructor(leaf: WorkspaceLeaf, plugin: LiftOffPlugin) {
+	constructor(leaf: WorkspaceLeaf, plugin: WorkoutsPlugin) {
 		super(leaf);
 		this.plugin = plugin;
 	}
@@ -20,7 +20,7 @@ export class HomeView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return "Liftoff";
+		return "Workouts";
 	}
 
 	getIcon(): string {

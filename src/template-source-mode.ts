@@ -1,5 +1,5 @@
 import { MarkdownView, type WorkspaceLeaf } from "obsidian";
-import type LiftOffPlugin from "./main";
+import type WorkoutsPlugin from "./main";
 import { isPathInFolder } from "./utils/folder";
 
 interface EditorMode {
@@ -16,7 +16,7 @@ export class TemplateSourceMode {
 	private forced = new WeakMap<WorkspaceLeaf, EditorMode>();
 	private switching = new WeakSet<WorkspaceLeaf>();
 
-	constructor(private plugin: LiftOffPlugin) {}
+	constructor(private plugin: WorkoutsPlugin) {}
 
 	register(): void {
 		const { workspace } = this.plugin.app;

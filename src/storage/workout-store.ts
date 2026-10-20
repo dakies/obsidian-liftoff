@@ -1,5 +1,5 @@
 import { App, TFile, TFolder, normalizePath } from "obsidian";
-import type { Workout, LiftOffSettings } from "../types";
+import type { Workout, WorkoutsSettings } from "../types";
 import { frontmatterToWorkout, workoutToFullMarkdown } from "../utils/frontmatter";
 import { generateWorkoutFilename } from "../utils/filename";
 
@@ -15,7 +15,7 @@ export interface RecentWorkout {
 export class WorkoutStore {
 	constructor(
 		private app: App,
-		private getSettings: () => LiftOffSettings
+		private getSettings: () => WorkoutsSettings
 	) {}
 
 	async saveWorkout(workout: Workout): Promise<TFile> {

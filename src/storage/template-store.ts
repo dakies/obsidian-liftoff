@@ -1,10 +1,10 @@
 import { App, TFile, TFolder, normalizePath, parseYaml } from "obsidian";
-import type { WorkoutTemplate, TemplateExercise, LiftOffSettings } from "../types";
+import type { WorkoutTemplate, TemplateExercise, WorkoutsSettings } from "../types";
 
 export class TemplateStore {
 	constructor(
 		private app: App,
-		private getSettings: () => LiftOffSettings
+		private getSettings: () => WorkoutsSettings
 	) {}
 
 	async getTemplates(): Promise<WorkoutTemplate[]> {

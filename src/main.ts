@@ -2,10 +2,10 @@ import { Plugin, WorkspaceLeaf } from "obsidian";
 import {
 	DEFAULT_SETTINGS,
 	type ActiveSession,
-	type LiftOffSettings,
+	type WorkoutsSettings,
 	type WorkoutTemplate,
 } from "./types";
-import { LiftOffSettingTab } from "./settings";
+import { WorkoutsSettingTab } from "./settings";
 import { WorkoutStore } from "./storage/workout-store";
 import { TemplateStore } from "./storage/template-store";
 import { HomeView, HOME_VIEW_TYPE } from "./views/home-view";
@@ -14,12 +14,12 @@ import { ConfirmModal } from "./components/modals";
 import { TemplateSourceMode } from "./template-source-mode";
 
 interface PersistedData {
-	settings: LiftOffSettings;
+	settings: WorkoutsSettings;
 	activeSession: ActiveSession | null;
 }
 
-export default class LiftOffPlugin extends Plugin {
-	settings: LiftOffSettings = DEFAULT_SETTINGS;
+export default class WorkoutsPlugin extends Plugin {
+	settings: WorkoutsSettings = DEFAULT_SETTINGS;
 	activeSession: ActiveSession | null = null;
 	workoutStore: WorkoutStore = null!;
 	templateStore: TemplateStore = null!;
@@ -33,12 +33,12 @@ export default class LiftOffPlugin extends Plugin {
 		this.registerView(HOME_VIEW_TYPE, (leaf) => new HomeView(leaf, this));
 		this.registerView(WORKOUT_VIEW_TYPE, (leaf) => new WorkoutView(leaf, this));
 
-		this.addSettingTab(new LiftOffSettingTab(this.app, this));
+		this.addSettingTab(new WorkoutsSettingTab(this.app, this));
 
 		new TemplateSourceMode(this).register();
 
-		this.addRibbonIcon("dumbbell", "Open liftoff", () => {
-			void this.openLiftoff();
+		this.addRibbonIcon("dumbbell", "Open workouts", () => {
+			void this.openWorkouts();
 		});
 
 		this.addCommand({
@@ -85,7 +85,7 @@ export default class LiftOffPlugin extends Plugin {
 		}
 	}
 
-	async openLiftoff(): Promise<void> {
+	async openWorkouts(): Promise<void> {
 		// Ribbon entry point: resume in-flight session if any, else home.
 		if (this.activeSession) {
 			await this.resumeWorkout();
@@ -158,7 +158,7 @@ export default class LiftOffPlugin extends Plugin {
 	async loadSettings() {
 		const raw = (await this.loadData()) as
 			| Partial<PersistedData>
-			| Partial<LiftOffSettings>
+			| Partial<WorkoutsSettings>
 			| null;
 
 		if (raw && typeof raw === "object" && "settings" in raw && raw.settings) {
@@ -167,7 +167,7 @@ export default class LiftOffPlugin extends Plugin {
 			this.activeSession = persisted.activeSession ?? null;
 		} else {
 			// Legacy format: data.json was the settings object directly.
-			this.settings = { ...DEFAULT_SETTINGS, ...(raw as Partial<LiftOffSettings> ?? {}) };
+			this.settings = { ...DEFAULT_SETTINGS, ...(raw as Partial<WorkoutsSettings> ?? {}) };
 			this.activeSession = null;
 		}
 	}
