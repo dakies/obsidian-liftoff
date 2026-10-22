@@ -114,25 +114,33 @@ export function formatWeight(w: number): string {
 	return String(roundWeight(w)).replace(".", ",");
 }
 
-/**
- * Whether the exercise is going backwards: mean reps at the working weight stayed below the
- * range in the last two sessions without improving, or fell in each of the last two sessions
- * at the same weight by at least MIN_DECLINE of the estimated max. Sessions must be newest-first.
- */
-export function detectRegression(sessions: ExerciseSession[], options: TargetOptions): boolean {
-	const [last, prev, before] = workingSessions(sessions, options.since).slice(0, 3).map(summarize);
-	if (!last || !prev) return false;
+// "declining": reps falling at one weight. "below-range": stuck under the range, e.g. after too big a jump.
+export type Regression = "declining" | "below-range";
 
+/**
+ * Whether the exercise is going backwards: mean reps at the working weight fell in each of the
+ * last two sessions at the same weight by at least MIN_DECLINE of the estimated max, or stayed
+ * below the range in the last two sessions without improving. Sessions must be newest-first.
+ */
+export function detectRegression(sessions: ExerciseSession[], options: TargetOptions): Regression | null {
+	const [last, prev, before] = workingSessions(sessions, options.since).slice(0, 3).map(summarize);
+	if (!last || !prev) return null;
 	const sameWeight = last.weight === prev.weight;
-	const min = options.range?.min;
-	if (min !== undefined && last.meanReps < min && prev.meanReps < min) {
-		if (!sameWeight || last.meanReps <= prev.meanReps) return true;
+
+	if (
+		before && sameWeight && prev.weight === before.weight
+		&& last.meanReps < prev.meanReps && prev.meanReps < before.meanReps
+		// At a constant weight the relative drop in Epley's estimate depends on reps alone.
+		&& (before.meanReps - last.meanReps) / (30 + before.meanReps) >= MIN_DECLINE
+	) {
+		return "declining";
 	}
 
-	if (!before || !sameWeight || prev.weight !== before.weight) return false;
-	if (last.meanReps >= prev.meanReps || prev.meanReps >= before.meanReps) return false;
-	// At a constant weight the relative drop in Epley's estimate depends on reps alone.
-	return (before.meanReps - last.meanReps) / (30 + before.meanReps) >= MIN_DECLINE;
+	const min = options.range?.min;
+	if (min !== undefined && last.meanReps < min && prev.meanReps < min) {
+		if (!sameWeight || last.meanReps <= prev.meanReps) return "below-range";
+	}
+	return null;
 }
 
 /**
@@ -165,7 +173,8 @@ export function computeNextTarget(
 		};
 	};
 
-	if (detectRegression(sessions, options)) return decrease("Rückschritt");
+	const regression = detectRegression(sessions, options);
+	if (regression) return decrease(regression === "declining" ? "Rückschritt" : "Unter dem Bereich");
 
 	if (!range) {
 		return { kind: "unknown-range", text: "+1 Wdh. oder +Gewicht" };

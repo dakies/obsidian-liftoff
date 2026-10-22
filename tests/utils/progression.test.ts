@@ -61,7 +61,7 @@ describe("detectRegression", () => {
 			{ date: "2026-09-11", sets: sets([75, 5], [75, 5], [75, 5]) },
 			{ date: "2026-09-05", sets: sets([75, 6], [75, 6], [75, 7]) },
 		];
-		expect(detectRegression(history, { range })).toBe(true);
+		expect(detectRegression(history, { range })).toBe("below-range");
 	});
 
 	it("does not flag reps climbing back towards the range", () => {
@@ -69,7 +69,7 @@ describe("detectRegression", () => {
 			{ date: "2026-09-11", sets: sets([75, 7], [75, 7], [75, 7]) },
 			{ date: "2026-09-05", sets: sets([75, 6], [75, 6], [75, 6]) },
 		];
-		expect(detectRegression(history, { range })).toBe(false);
+		expect(detectRegression(history, { range })).toBeNull();
 	});
 
 	it("flags staying below the range after a weight change", () => {
@@ -77,7 +77,7 @@ describe("detectRegression", () => {
 			{ date: "2026-09-11", sets: sets([70, 7], [70, 7]) },
 			{ date: "2026-09-05", sets: sets([75, 6], [75, 6]) },
 		];
-		expect(detectRegression(history, { range })).toBe(true);
+		expect(detectRegression(history, { range })).toBe("below-range");
 	});
 
 	it("flags reps falling twice at the same weight", () => {
@@ -86,8 +86,8 @@ describe("detectRegression", () => {
 			{ date: "2026-09-05", sets: sets([20, 12], [20, 10], [20, 9]) },
 			{ date: "2026-08-30", sets: sets([20, 12], [20, 12], [20, 12]) },
 		];
-		expect(detectRegression(history, { range: { min: 10, max: 15 } })).toBe(true);
-		expect(detectRegression(history, { range: null })).toBe(true);
+		expect(detectRegression(history, { range: { min: 10, max: 15 } })).toBe("declining");
+		expect(detectRegression(history, { range: null })).toBe("declining");
 	});
 
 	it("ignores small drops at high reps", () => {
@@ -96,7 +96,7 @@ describe("detectRegression", () => {
 			{ date: "2026-09-15", sets: sets([10, 19], [10, 18], [10, 18]) },
 			{ date: "2026-09-08", sets: sets([10, 19], [10, 19], [10, 19]) },
 		];
-		expect(detectRegression(history, { range: { min: 15, max: 20 } })).toBe(false);
+		expect(detectRegression(history, { range: { min: 15, max: 20 } })).toBeNull();
 	});
 
 	it("does not count a deliberate weight reset as falling reps", () => {
@@ -105,7 +105,7 @@ describe("detectRegression", () => {
 			{ date: "2026-09-23", sets: sets([70, 10], [70, 10], [70, 10]) },
 			{ date: "2026-09-10", sets: sets([80, 9], [80, 10], [80, 9]) },
 		];
-		expect(detectRegression(history, { range })).toBe(false);
+		expect(detectRegression(history, { range })).toBeNull();
 	});
 
 	it("needs two sessions after since", () => {
@@ -113,8 +113,8 @@ describe("detectRegression", () => {
 			{ date: "2026-09-11", sets: sets([75, 5], [75, 5]) },
 			{ date: "2026-09-05", sets: sets([75, 6], [75, 6]) },
 		];
-		expect(detectRegression(history.slice(0, 1), { range })).toBe(false);
-		expect(detectRegression(history, { range, since: "2026-09-10" })).toBe(false);
+		expect(detectRegression(history.slice(0, 1), { range })).toBeNull();
+		expect(detectRegression(history, { range, since: "2026-09-10" })).toBeNull();
 	});
 });
 
@@ -205,14 +205,24 @@ describe("computeNextTarget", () => {
 		});
 	});
 
-	it("lowers the weight after a regression", () => {
+	it("lowers the weight when stuck below the range", () => {
 		const history: ExerciseSession[] = [
 			{ date: "2026-09-11", sets: sets([75, 5], [75, 5], [75, 5]) },
 			{ date: "2026-09-05", sets: sets([75, 6], [75, 6], [75, 7]) },
 		];
 		const target = computeNextTarget(history, { range: { min: 8, max: 10 } });
 		expect(target?.kind).toBe("decrease-weight");
-		expect(target?.text).toBe("Rückschritt · Gewicht auf ≈ 67,5 kg senken");
+		expect(target?.text).toBe("Unter dem Bereich · Gewicht auf ≈ 67,5 kg senken");
+	});
+
+	it("lowers the weight when reps keep falling", () => {
+		const history: ExerciseSession[] = [
+			{ date: "2026-09-11", sets: sets([20, 9], [20, 8], [20, 9]) },
+			{ date: "2026-09-05", sets: sets([20, 12], [20, 10], [20, 9]) },
+			{ date: "2026-08-30", sets: sets([20, 12], [20, 12], [20, 12]) },
+		];
+		expect(computeNextTarget(history, { range: { min: 10, max: 15 } })?.text)
+			.toBe("Rückschritt · Gewicht auf ≈ 18 kg senken");
 	});
 
 	it("treats logged kg on bodyweight exercises as added weight", () => {
@@ -231,9 +241,9 @@ describe("computeNextTarget", () => {
 			{ date: "2026-03-17", sets: sets([8, 5], [8, 4]) },
 			{ date: "2026-03-10", sets: sets([8, 5], [8, 5]) },
 		];
-		expect(computeNextTarget(regressing, bw)?.text).toBe("Rückschritt · Zusatzgewicht auf ≈ 7 kg senken");
+		expect(computeNextTarget(regressing, bw)?.text).toBe("Unter dem Bereich · Zusatzgewicht auf ≈ 7 kg senken");
 		const regressingAtBodyweight = regressing.map((s) => ({ ...s, sets: s.sets.map((x) => ({ ...x, weight: 0 })) }));
-		expect(computeNextTarget(regressingAtBodyweight, bw)?.text).toBe("Rückschritt · leichtere Variante");
+		expect(computeNextTarget(regressingAtBodyweight, bw)?.text).toBe("Unter dem Bereich · leichtere Variante");
 	});
 
 	it("returns null without history", () => {

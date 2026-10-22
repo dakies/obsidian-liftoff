@@ -215,7 +215,7 @@ export class WorkoutView extends ItemView {
 			const deloadEl = container.createDiv({ cls: "ln-deload-banner" });
 			deloadEl.createSpan({ cls: "ln-exercise-target-label", text: "Deload empfohlen: " });
 			deloadEl.createSpan({
-				text: `${regressed.length} Übungen rückläufig (${regressed.join(", ")}). `
+				text: `${regressed.length} Übungen rückläufig oder unter dem Bereich (${regressed.join(", ")}). `
 					+ "Eine Woche leichter trainieren: halbe Sätze, ~10 % weniger Gewicht.",
 			});
 		}
@@ -470,7 +470,7 @@ export class WorkoutView extends ItemView {
 		}
 		return [...names.values()].filter((name) => {
 			const { history, options } = this.progressionInputs(name);
-			return detectRegression(history, options);
+			return detectRegression(history, options) !== null;
 		});
 	}
 
