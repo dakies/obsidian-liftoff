@@ -8,7 +8,18 @@ import { ConfirmModal, ExerciseDetailsModal } from "../components/modals";
 import { TimerModal } from "./timer-view";
 import { findLastSetsForExercise, findPastSessionsForExercise } from "../utils/history";
 import { resolveExerciseNote } from "../utils/exercise-note";
-import { computeNextTarget, normalizeDate, parseRepRange, type NextTarget } from "../utils/progression";
+import {
+	computeNextTarget,
+	daysBetween,
+	DELOAD_THRESHOLD,
+	DELOAD_WINDOW_DAYS,
+	detectRegression,
+	normalizeDate,
+	parseRepRange,
+	type ExerciseSession,
+	type NextTarget,
+	type TargetOptions,
+} from "../utils/progression";
 import { resolveFinishTime } from "../utils/finish-time";
 
 export const WORKOUT_VIEW_TYPE = "workouts-workout";
@@ -197,6 +208,17 @@ export class WorkoutView extends ItemView {
 		timerBtn.addEventListener("click", () => {
 			new TimerModal(this.app, this.plugin.settings).open();
 		});
+
+		// Several lifts going backwards at once points to accumulated fatigue, not one exercise.
+		const regressed = this.findRegressedExercises();
+		if (regressed.length >= DELOAD_THRESHOLD) {
+			const deloadEl = container.createDiv({ cls: "ln-deload-banner" });
+			deloadEl.createSpan({ cls: "ln-exercise-target-label", text: "Deload empfohlen: " });
+			deloadEl.createSpan({
+				text: `${regressed.length} Übungen rückläufig (${regressed.join(", ")}). `
+					+ "Eine Woche leichter trainieren: halbe Sätze, ~10 % weniger Gewicht.",
+			});
+		}
 
 		// Rest timer (hidden until a set is completed)
 		this.restTimerEl = container.createDiv({ cls: "ln-rest-timer ln-rest-timer-hidden" });
@@ -410,7 +432,7 @@ export class WorkoutView extends ItemView {
 		});
 	}
 
-	private computeTarget(name: string): NextTarget | null {
+	private progressionInputs(name: string): { history: ExerciseSession[]; options: TargetOptions } {
 		const libraryEntry = this.plugin.settings.exerciseLibrary.find(
 			(e) => e.name.toLowerCase() === name.toLowerCase()
 		);
@@ -421,11 +443,34 @@ export class WorkoutView extends ItemView {
 			this.plugin.settings.exerciseFolder
 		);
 		const fm = note ? this.app.metadataCache.getFileCache(note.file)?.frontmatter : undefined;
-		const history = findPastSessionsForExercise(this.recentWorkouts, name, Infinity);
-		return computeNextTarget(history, {
-			range: parseRepRange(fm?.reps ?? libraryEntry?.recommendedReps),
-			bodyweight: fm?.bodyweight === true || fm?.bodyweight === "true",
-			since: normalizeDate(fm?.since),
+		return {
+			history: findPastSessionsForExercise(this.recentWorkouts, name, Infinity),
+			options: {
+				range: parseRepRange(fm?.reps ?? libraryEntry?.recommendedReps),
+				bodyweight: fm?.bodyweight === true || fm?.bodyweight === "true",
+				since: normalizeDate(fm?.since),
+			},
+		};
+	}
+
+	private computeTarget(name: string): NextTarget | null {
+		const { history, options } = this.progressionInputs(name);
+		return computeNextTarget(history, options);
+	}
+
+	/** Exercises trained within the deload window whose latest session shows a regression. */
+	private findRegressedExercises(): string[] {
+		const names = new Map<string, string>();
+		for (const workout of this.recentWorkouts) {
+			if (daysBetween(workout.date, this.workout.date) > DELOAD_WINDOW_DAYS) continue;
+			for (const exercise of workout.exercises) {
+				const key = exercise.name.toLowerCase();
+				if (exercise.exerciseType !== "timer" && !names.has(key)) names.set(key, exercise.name);
+			}
+		}
+		return [...names.values()].filter((name) => {
+			const { history, options } = this.progressionInputs(name);
+			return detectRegression(history, options);
 		});
 	}
 

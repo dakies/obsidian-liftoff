@@ -441,6 +441,20 @@
 	border-left-color: var(--color-green);
 }
 
+.ln-exercise-target.ln-exercise-target-decrease-weight {
+	border-left-color: var(--color-orange);
+}
+
+.ln-deload-banner {
+	font-size: 13px;
+	color: var(--text-normal);
+	margin: 0 0 12px;
+	padding: 8px 10px;
+	border-radius: 8px;
+	background: var(--background-primary);
+	border-left: 3px solid var(--color-orange);
+}
+
 .ln-exercise-target-label {
 	font-weight: 600;
 }

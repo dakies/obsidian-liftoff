@@ -3,6 +3,7 @@ import type { Workout, WorkoutSet } from "../types";
 export interface LastExerciseData {
 	date: string;
 	sets: WorkoutSet[];
+	rir?: number; // reps in reserve on the last set
 	// Timer exercise data
 	workSeconds?: number;
 	restSeconds?: number;
@@ -27,6 +28,7 @@ export function findLastSetsForExercise(
 			return {
 				date: workout.date,
 				sets: exercise.sets,
+				rir: exercise.rir,
 				workSeconds: exercise.workSeconds,
 				restSeconds: exercise.restSeconds,
 				intervals: exercise.intervals,
@@ -57,6 +59,7 @@ export function findPastSessionsForExercise(
 		results.push({
 			date: workout.date,
 			sets: exercise.sets,
+			rir: exercise.rir,
 			workSeconds: exercise.workSeconds,
 			restSeconds: exercise.restSeconds,
 			intervals: exercise.intervals,
