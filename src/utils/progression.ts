@@ -134,6 +134,6 @@ export function computeNextTarget(
 		};
 	}
 
-	const lastReps = sets.map((s) => s.reps).join("/");
-	return { kind: "add-rep", text: `${loadLabel(weight)}, +1 Wdh. (zuletzt ${lastReps})` };
+	// The set rows are pre-filled with last session's weight and reps, so the target names only the change.
+	return { kind: "add-rep", text: "+1 Wdh." };
 }

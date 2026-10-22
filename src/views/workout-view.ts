@@ -490,7 +490,11 @@ export class WorkoutView extends ItemView {
 		if (this.timerIntervalId !== null) {
 			window.clearInterval(this.timerIntervalId);
 		}
-		this.stopRestTimer();
+		// Only stop ticking: the rest timer keeps running in the saved session while the view is closed.
+		if (this.restTimerIntervalId !== null) {
+			window.clearInterval(this.restTimerIntervalId);
+			this.restTimerIntervalId = null;
+		}
 		// Flush any pending persist so mobile tab-close doesn't lose the last edit.
 		if (this.persistTimeoutId !== null) {
 			window.clearTimeout(this.persistTimeoutId);

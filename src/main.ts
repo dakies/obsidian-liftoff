@@ -11,6 +11,7 @@ import { TemplateStore } from "./storage/template-store";
 import { HomeView, HOME_VIEW_TYPE } from "./views/home-view";
 import { WorkoutView, WORKOUT_VIEW_TYPE } from "./views/workout-view";
 import { ConfirmModal } from "./components/modals";
+import { SessionIndicator } from "./components/session-indicator";
 import { TemplateSourceMode } from "./template-source-mode";
 
 interface PersistedData {
@@ -36,6 +37,14 @@ export default class WorkoutsPlugin extends Plugin {
 		this.addSettingTab(new WorkoutsSettingTab(this.app, this));
 
 		new TemplateSourceMode(this).register();
+
+		// Keep elapsed/rest time visible while browsing other notes mid-workout.
+		const indicator = new SessionIndicator(this);
+		this.register(() => indicator.destroy());
+		this.registerInterval(window.setInterval(() => indicator.update(), 1000));
+		this.registerEvent(this.app.workspace.on("active-leaf-change", () => indicator.update()));
+		this.registerEvent(this.app.workspace.on("layout-change", () => indicator.update()));
+		this.app.workspace.onLayoutReady(() => indicator.update());
 
 		this.addRibbonIcon("dumbbell", "Open workouts", () => {
 			void this.openWorkouts();
@@ -137,6 +146,14 @@ export default class WorkoutsPlugin extends Plugin {
 	async resumeWorkout(): Promise<void> {
 		if (!this.activeSession) {
 			await this.showHomeView();
+			return;
+		}
+
+		// A live workout view already holds the session; re-rendering would reset scroll and collapsed cards.
+		const live = this.app.workspace.getLeavesOfType(WORKOUT_VIEW_TYPE)[0];
+		if (live) {
+			this.app.workspace.setActiveLeaf(live, { focus: true });
+			await this.app.workspace.revealLeaf(live);
 			return;
 		}
 

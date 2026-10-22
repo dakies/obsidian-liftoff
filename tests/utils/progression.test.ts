@@ -85,7 +85,7 @@ describe("computeNextTarget", () => {
 		const history: ExerciseSession[] = [{ date: "2026-03-10", sets: sets([30, 12], [30, 11], [30, 9]) }];
 		const target = computeNextTarget(history, { range });
 		expect(target?.kind).toBe("add-rep");
-		expect(target?.text).toBe("30 kg, +1 Wdh. (zuletzt 12/11/9)");
+		expect(target?.text).toBe("+1 Wdh.");
 	});
 
 	it("only judges sets at the working weight", () => {
@@ -108,7 +108,7 @@ describe("computeNextTarget", () => {
 			{ date: "2026-03-17", sets: sets([30, 0]) },
 			{ date: "2026-03-10", sets: sets([30, 12], [30, 10]) },
 		];
-		expect(computeNextTarget(history, { range })?.text).toBe("30 kg, +1 Wdh. (zuletzt 12/10)");
+		expect(computeNextTarget(history, { range })?.text).toBe("+1 Wdh.");
 	});
 
 	it("ignores sessions before since, including for step detection", () => {
@@ -126,7 +126,7 @@ describe("computeNextTarget", () => {
 	it("treats logged kg on bodyweight exercises as added weight", () => {
 		const atBodyweight: ExerciseSession[] = [{ date: "2026-03-10", sets: sets([0, 9], [0, 8]) }];
 		expect(computeNextTarget(atBodyweight, { range: { min: 6, max: 12 }, bodyweight: true })?.text)
-			.toBe("Körpergewicht, +1 Wdh. (zuletzt 9/8)");
+			.toBe("+1 Wdh.");
 
 		const topAtBodyweight: ExerciseSession[] = [{ date: "2026-03-10", sets: sets([0, 12], [0, 12]) }];
 		expect(computeNextTarget(topAtBodyweight, { range: { min: 6, max: 12 }, bodyweight: true })?.text)

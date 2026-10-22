@@ -169,16 +169,7 @@ export class ExerciseCard {
 		colHeaders.createSpan({ cls: "ln-set-input", text: "REPS" });
 		colHeaders.createSpan({ cls: "ln-set-check", text: "" });
 
-		// Previous hint
-		if (this.lastData && this.lastData.sets.length > 0) {
-			const lastSet = this.lastData.sets[this.lastData.sets.length - 1]!;
-			this.containerEl.createDiv({
-				cls: "ln-exercise-previous",
-				text: `Previous: ${lastSet.weight} x ${lastSet.reps}`,
-			});
-		}
-
-		// Sets container
+		// Sets container (rows are pre-filled from the last session, so no separate "Previous" hint)
 		this.setsContainerEl = this.containerEl.createDiv({ cls: "ln-sets-container" });
 		this.renderSets();
 
